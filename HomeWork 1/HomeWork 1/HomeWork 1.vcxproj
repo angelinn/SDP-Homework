@@ -10,6 +10,16 @@
       <Platform>Win32</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ComputeExpression.h" />
+    <ClInclude Include="Operator.h" />
+    <ClInclude Include="Stack.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="ComputeExpression.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Operator.cpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{099B6159-BB96-4071-9CA4-274CA69E8D49}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
@@ -75,8 +85,6 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

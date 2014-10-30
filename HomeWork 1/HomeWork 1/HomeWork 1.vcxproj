@@ -14,11 +14,13 @@
     <ClInclude Include="ComputeExpression.h" />
     <ClInclude Include="Operator.h" />
     <ClInclude Include="Stack.h" />
+    <ClInclude Include="ValidateExpression.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ComputeExpression.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Operator.cpp" />
+    <ClCompile Include="ValidateExpression.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{099B6159-BB96-4071-9CA4-274CA69E8D49}</ProjectGuid>

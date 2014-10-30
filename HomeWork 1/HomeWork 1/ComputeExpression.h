@@ -11,7 +11,7 @@ public:
 	int compute(const char*, const char*);
 
 private:
-	Operator readOperator(std::ifstream &);
+	Operator** readOperator(std::ifstream &);
 };
 
 #endif // COMPUTE_EXPRESSION_H

@@ -7,23 +7,29 @@ int ComputeExpression::compute(const char* fileName, const char* expression)
 {
 	std::ifstream readFile(fileName, std::ios::in);
 
-	Operator a(readOperator(readFile));
-	std::cout << a.getSign();
+	Operator** operatorsDescription = readOperator(readFile);
+
 
 	return 0;
 }
 
-Operator ComputeExpression::readOperator(std::ifstream& readFile)
-{
+Operator** ComputeExpression::readOperator(std::ifstream& readFile)
+{ 
+	Operator** result = new Operator*[1024];
 	char letter;
 	char sign;
 	int priority;
 	int associativity;
 
-	readFile >> letter;
-	readFile >> sign;
-	readFile >> priority;
-	readFile >> associativity;
+	for (int i = 0; !readFile.eof(); ++i)
+	{
+		readFile >> letter;
+		readFile >> sign;
+		readFile >> priority;
+		readFile >> associativity;
 
-	return Operator(letter, sign, priority, associativity);
+		result[i] = new Operator(letter, sign, priority, associativity);
+	}
+
+	return result;
 }

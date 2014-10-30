@@ -1,10 +1,8 @@
 #include "ValidateExpression.h"
+#include "operatorsConstants.h"
 
 bool ValidateExpression::areBracketsValid(const char* expression)
 {
-	const char OPEN_BRACKET = '(';
-	const char CLOSE_BRACKET = ')';
-
 	int bracketsCount = 0;
 
 	while (*expression)

@@ -8,14 +8,15 @@ class Operator;
 class ComputeExpression
 {
 public:
-	int compute(const char*, const char*);
+	double compute(const char*, const char*);
 
 private:
-	Operator** readOperator(std::ifstream &);
+	Operator** readOperator(std::ifstream &, int &);
 
 private:
 	bool isOperator(char c);
-	int calculate(int, int, const Operator &);
+	double calculate(double, double, const Operator &);
+	double fetchNumber(const char *&);
 };
 
 #endif // COMPUTE_EXPRESSION_H

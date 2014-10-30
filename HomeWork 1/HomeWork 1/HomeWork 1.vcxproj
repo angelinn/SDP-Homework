@@ -13,6 +13,7 @@
   <ItemGroup>
     <ClInclude Include="ComputeExpression.h" />
     <ClInclude Include="Operator.h" />
+    <ClInclude Include="operatorsConstants.h" />
     <ClInclude Include="Stack.h" />
     <ClInclude Include="ValidateExpression.h" />
   </ItemGroup>

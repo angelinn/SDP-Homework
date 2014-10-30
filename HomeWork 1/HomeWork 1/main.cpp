@@ -4,7 +4,8 @@
 
 int main()
 {
-	std::cout << std::boolalpha << ValidateExpression::isValid("31 a (( 5 b 32 f 10 e -230 ) c 324 d 17") << std::endl;
+	ComputeExpression a;
+	a.compute("test.txt", "2.321 + 345 + 12312213.23 + -213.1 + 1.4676");
 
 
 	return 0;

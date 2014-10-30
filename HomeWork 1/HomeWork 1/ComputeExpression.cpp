@@ -4,11 +4,12 @@
 #include "Stack.h"
 #include "Operator.h"
 #include <iostream>
-#include <fstream>
 
 
 double ComputeExpression::compute(const char* fileName, const char* expression)
 {
+	static int counter = 0;
+
 	std::ifstream readFile(fileName, std::ios::in);
 	if (!readFile)
 		throw std::exception("Cannot open file.");
@@ -19,34 +20,67 @@ double ComputeExpression::compute(const char* fileName, const char* expression)
 	if (!ValidateExpression::areBracketsValid(expression))
 		throw std::exception("Brackets are not valid mathematically.");
 
+	Stack<double> numbers;
+	Stack<Operator*> operators;
+
 	while (*expression)
 	{
-		Stack<double> numbers;
-		Stack<Operator*> operators;
-
-		if (*expression == OPEN_BRACKET)
-			operators.push(new Operator(OPEN_BRACKET, OPEN_BRACKET, -1, -1));
+		Operator* oper = NULL;
 
 		else if (isdigit(*expression))
 		{
-			std::cout << fetchNumber(expression) << std::endl;
+			numbers.push(fetchNumber(expression));
+			continue;
 		}
 
-		if (isOperator(*expression))
+		else if (isOperator(*expression))
 		{
-			
 			for (int i = 0; i < operatorsArraySize; ++i)
+			{
 				if (*expression == operatorsDescription[i]->getLetter())
-					Operator oper = Operator(*operatorsDescription[i]);
+				{
+					oper = new Operator(*operatorsDescription[i]);
+					break;
+				}
+			}
 
-			if (operators.)
+			if (operators.isEmpty() || operators.peek()->getSign() == OPEN_BRACKET)
+				operators.push(oper);
+
+			else if (operators.peek()->getPriority() > oper->getPriority())
+			{
+				numbers.push(calculate(numbers.pop(), numbers.pop(), operators.pop()));
+				continue;
+			}
+
+			else if (operators.peek()->getPriority() < oper->getPriority())
+				operators.push(oper);
+
+			else if (operators.peek()->getAssociativity() == 1 && oper->getAssociativity() == 1)
+				operators.push(oper);
+
+			else if (operators.peek()->getAssociativity() == 0 && oper->getAssociativity() == 0)
+			{
+				numbers.push(calculate(numbers.pop(), numbers.pop(), operators.pop()));
+				operators.push(oper);
+			}
+
+			else
+				throw std::exception("Operators with same priority, but different associativity.");
 		}
 
 		++expression;
 	}
 
+	while (!operators.isEmpty())
+		numbers.push(calculate(numbers.pop(), numbers.pop(), operators.pop()));
 
-	return 0;
+	return numbers.pop();
+}
+
+void ComputeExpression::checkIfBrackets(Stack<double>& numbers, Stack<Operator*>& operators)
+{
+
 }
 
 double ComputeExpression::fetchNumber(const char*& expression)
@@ -60,7 +94,7 @@ double ComputeExpression::fetchNumber(const char*& expression)
 		++i;
 	}
 
-	while (*expression != ' ' && *expression != '\0')
+	while (isdigit(*expression))
 	{
 		numberBuffer[i] = *expression;
 		++i;
@@ -75,9 +109,9 @@ bool ComputeExpression::isOperator(char c)
 	return isalpha(c);
 }
 
-double ComputeExpression::calculate(double left, double right, const Operator& op)
+double ComputeExpression::calculate(double left, double right, const Operator* op)
 {
-	switch (op.getSign())
+	switch (op->getSign())
 	{
 		case ADD: return left + right;
 		case SUBSTRACT: return left - right;
@@ -86,7 +120,7 @@ double ComputeExpression::calculate(double left, double right, const Operator& o
 		{
 			if (!right)
 				throw std::invalid_argument("Division by zero error.");
-			return left * right;
+			return left / right;
 		}	
 	}
 	throw std::invalid_argument("Invalid operator");

@@ -69,7 +69,7 @@ template <typename T>
 T Stack<T>::peek() const
 {
 	if (isEmpty())
-		throw "Stack is empty";
+		throw std::exception("Stack is empty");
 
 	return top->getData();
 }
@@ -78,7 +78,7 @@ template <typename T>
 T Stack<T>::pop()
 {
 	if (isEmpty())
-		throw "Stack is empty";
+		throw std::exception("Stack is empty");
 
 	T data = top->getData();
 	Node<T>* copy = const_cast<Node<T>*> (top->getPrevious());

@@ -14,8 +14,9 @@ private:
 	Operator** readOperator(std::ifstream &, int &);
 
 private:
+	void checkIfBrackets(Stack<double> &, Stack<Operator*> &);
 	bool isOperator(char c);
-	double calculate(double, double, const Operator &);
+	double calculate(double, double, const Operator *);
 	double fetchNumber(const char *&);
 };
 

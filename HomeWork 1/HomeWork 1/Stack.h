@@ -37,6 +37,10 @@ public:
 	T peek() const;
 
 private:
+	Stack(const Stack<T> &);
+	Stack<T>& operator=(const Stack<T> &);
+
+private:
 	Node<T>* top;
 };
 

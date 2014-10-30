@@ -11,6 +11,17 @@ ComputeExpression::ComputeExpression() : operatorsDescription(NULL), operatorsAr
 { }
 
 ///
+/// D-tor - Deletes the operators array
+///
+ComputeExpression::~ComputeExpression()
+{
+	for (int i = 0; i < operatorsArraySize; ++i)
+		delete operatorsDescription[i];
+
+	delete operatorsDescription;
+}
+
+///
 /// Computes the given expression by the description of the operators in the given file name
 ///
 double ComputeExpression::compute(const char* fileName, const char* expression)
@@ -24,9 +35,11 @@ double ComputeExpression::compute(const char* fileName, const char* expression)
 	if (!ValidateExpression::areBracketsValid(expression))
 		throw std::exception("Brackets are not valid mathematically.");
 
+	Operator* oper = NULL;
+
 	while (*expression)
 	{
-		checkIfBrackets(expression);
+		checkIfBrackets(expression, oper);
 
 		if (isdigit(*expression))
 		{
@@ -35,7 +48,7 @@ double ComputeExpression::compute(const char* fileName, const char* expression)
 		}
 
 		if (isOperator(*expression))
-			while (checkIfOperator(expression))
+			while (checkIfOperator(expression, oper))
 			{ }
 
 		++expression;
@@ -44,6 +57,7 @@ double ComputeExpression::compute(const char* fileName, const char* expression)
 	while (!operators.isEmpty())
 		numbers.push(calculate(numbers.pop(), numbers.pop(), operators.pop()));
 
+	delete oper;
 	return numbers.pop();
 }
 
@@ -51,10 +65,8 @@ double ComputeExpression::compute(const char* fileName, const char* expression)
 /// If the given element is an operator, the function decides what to do with it,
 /// depending on the previous operator in the stack
 ///
-int ComputeExpression::checkIfOperator(const char* expression)
+int ComputeExpression::checkIfOperator(const char* expression, Operator* oper)
 {
-	Operator* oper = NULL;
-
 	for (int i = 0; i < operatorsArraySize; ++i)
 	{
 		if (*expression == operatorsDescription[i]->getLetter())
@@ -88,15 +100,15 @@ int ComputeExpression::checkIfOperator(const char* expression)
 	else
 		throw std::exception("Operators with same priority, but different associativity.");
 
+	//delete oper;
 	return 0;
 }
 
 ///
 /// Checks if the current character is a bracket and decides what to do with it
 ///
-void ComputeExpression::checkIfBrackets(const char* expression)
+void ComputeExpression::checkIfBrackets(const char* expression, Operator* oper)
 {
-	Operator* oper = NULL;
 	if (*expression == OPEN_BRACKET)
 		operators.push(new Operator(OPEN_BRACKET, OPEN_BRACKET, -1, -1));
 

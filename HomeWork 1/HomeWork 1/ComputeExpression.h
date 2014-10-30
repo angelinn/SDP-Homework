@@ -10,9 +10,14 @@ class ComputeExpression
 {
 public:
 	ComputeExpression();
+	~ComputeExpression();
 
 public:
 	double compute(const char*, const char*);
+
+private:
+	ComputeExpression(const ComputeExpression &);
+	ComputeExpression& operator=(const ComputeExpression &);
 
 private:
 	void readOperator(std::ifstream &);
@@ -24,8 +29,8 @@ private:
 	int operatorsArraySize;
 
 private:
-	void checkIfBrackets(const char *);
-	int checkIfOperator(const char *);
+	void checkIfBrackets(const char *, Operator *);
+	int checkIfOperator(const char *, Operator *);
 	bool isOperator(char c);
 	double calculate(double, double, const Operator *);
 	double fetchNumber(const char *&);

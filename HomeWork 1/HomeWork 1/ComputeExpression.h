@@ -12,6 +12,10 @@ public:
 
 private:
 	Operator** readOperator(std::ifstream &);
+
+private:
+	bool isOperator(char c);
+	int calculate(int, int, const Operator &);
 };
 
 #endif // COMPUTE_EXPRESSION_H

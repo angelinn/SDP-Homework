@@ -4,11 +4,7 @@
 class ValidateExpression
 {
 public:
-	static bool isValid(const char *);
-
-private:
 	static bool areBracketsValid(const char *);
-	static bool isThereSamePriorAndAssoc(const char *);
 };
 
 

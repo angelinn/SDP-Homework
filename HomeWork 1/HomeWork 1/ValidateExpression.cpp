@@ -1,7 +1,4 @@
 #include "ValidateExpression.h"
-#include <iostream>
-#include <cstring>
-#include "Stack.h"
 
 bool ValidateExpression::areBracketsValid(const char* expression)
 {
@@ -24,14 +21,4 @@ bool ValidateExpression::areBracketsValid(const char* expression)
 	}
 
 	return !bracketsCount;
-}
-
-bool ValidateExpression::isThereSamePriorAndAssoc(const char* expression)
-{
-	return true;
-}
-
-bool ValidateExpression::isValid(const char* expression)
-{
-	return areBracketsValid(expression);
 }

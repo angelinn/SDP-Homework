@@ -1,6 +1,9 @@
 #include "ValidateExpression.h"
 #include "operatorsConstants.h"
 
+///
+/// Checks if the brackets in the expression are mathematically valid
+///
 bool ValidateExpression::areBracketsValid(const char* expression)
 {
 	int bracketsCount = 0;

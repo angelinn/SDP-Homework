@@ -9,16 +9,16 @@ public:
 
 public:
 	T getData() const { return data; }
-	const Node<T>* getPrevious() const { return previous; }
-	void setPrevious(Node<T>* prev) { previous = prev; }
+	const Node<T>* getNext() const { return next; }
+	void setNext(Node<T>* nxt) { next = nxt; }
 
 private:
 	T data;
-	Node<T>* previous;
+	Node<T>* next;
 };
 
 template <typename T>
-Node<T>::Node(T newData) : previous(NULL), data(newData)
+Node<T>::Node(T newData) : next(NULL), data(newData)
 { }
 
 
@@ -54,14 +54,14 @@ Stack<T>::~Stack()
 template <typename T>
 bool Stack<T>::isEmpty() const
 {
-	return top == NULL;
+	return !top;
 }
 
 template <typename T>
 void Stack<T>::push(T element)
 {
 	Node<T>* replacement = new Node<T>(element);
-	replacement->setPrevious(top);
+	replacement->setNext(top);
 	top = replacement;
 }
 
@@ -81,7 +81,7 @@ T Stack<T>::pop()
 		throw std::exception("Stack is empty");
 
 	T data = top->getData();
-	Node<T>* copy = const_cast<Node<T>*> (top->getPrevious());
+	Node<T>* copy = const_cast<Node<T>*> (top->getNext());
 
 	delete top;
 	top = copy;

@@ -7,8 +7,7 @@ int main()
 	try
 	{
 		ComputeExpression a;
-		std::cout << a.compute("test.txt", /*"23 a 25 b (1 c 3) d 2");//*/" 2499 u ( -2618 u 2118 z ( -2772 ) z 4475 l ( -1637 o 1872 i ( -867 t ( 230 l ( -4232 m ( 1933 j -2163 v 595 y ( 3513 j ( -3573 a ( -3659 ) z 2935 l ( 2198 n ( 3798 y 2583 z -3926 c ( 350 a ( -2703 ) ) ) ) ) ) ) ) ) ) ) )") << std::endl;
-		std::cout << "vs " << (double)(23 + 25 - (1 / 3) * 2) << std::endl;
+		std::cout << std::fixed << a.compute("test.txt", "4378 c -1960 z ( 4064 ) n 1386 w ( -607 ) o -2002 d ( -589 w -4549 ) o ( 2992 ) v ( 2722 h ( -1800 n -3402 k ( -594 ) e -4408 r -3959 p 3843 i ( -1072 ) f ( 2494 f ( -2416 g -4575 ) v 1598 ) t ( -439 n 4333 d 3653 ) ) )") << std::endl;
 	}
 	catch (std::exception& e)
 	{

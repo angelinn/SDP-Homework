@@ -4,14 +4,17 @@
 #include "Stack.h"
 #include "Operator.h"
 #include <iostream>
-
+///
+/// C-tor to set the default values
+///
 ComputeExpression::ComputeExpression() : operatorsDescription(NULL), operatorsArraySize(0)
 { }
 
+///
+/// Computes the given expression by the description of the operators in the given file name
+///
 double ComputeExpression::compute(const char* fileName, const char* expression)
 {
-	static int counter = 0;
-
 	std::ifstream readFile(fileName, std::ios::in);
 	if (!readFile)
 		throw std::exception("Cannot open file.");
@@ -23,8 +26,6 @@ double ComputeExpression::compute(const char* fileName, const char* expression)
 
 	while (*expression)
 	{
-		Operator* oper = NULL;
-
 		checkIfBrackets(expression);
 
 		if (isdigit(*expression))
@@ -46,6 +47,10 @@ double ComputeExpression::compute(const char* fileName, const char* expression)
 	return numbers.pop();
 }
 
+///
+/// If the given element is an operator, the function decides what to do with it,
+/// depending on the previous operator in the stack
+///
 int ComputeExpression::checkIfOperator(const char* expression)
 {
 	Operator* oper = NULL;
@@ -86,6 +91,9 @@ int ComputeExpression::checkIfOperator(const char* expression)
 	return 0;
 }
 
+///
+/// Checks if the current character is a bracket and decides what to do with it
+///
 void ComputeExpression::checkIfBrackets(const char* expression)
 {
 	Operator* oper = NULL;
@@ -99,6 +107,10 @@ void ComputeExpression::checkIfBrackets(const char* expression)
 	}
 }
 
+///
+/// Gets the number that starts with a digit from the expression
+/// Works with -, and increases the expression pointer
+///
 double ComputeExpression::fetchNumber(const char*& expression)
 {
 	char numberBuffer[1024];
@@ -120,11 +132,17 @@ double ComputeExpression::fetchNumber(const char*& expression)
 	return atof(numberBuffer);
 }
 
+///
+/// Checks if the character is an operator
+///
 bool ComputeExpression::isOperator(char c)
 {
 	return isalpha(c);
 }
 
+///
+/// Does the actual math calculation! Brrr, let's get outta here faster!
+///
 double ComputeExpression::calculate(double left, double right, const Operator* op)
 {
 	switch (op->getSign())
@@ -142,9 +160,14 @@ double ComputeExpression::calculate(double left, double right, const Operator* o
 	throw std::invalid_argument("Invalid operator");
 }
 
+///
+/// Reads the operators from the given file into the field called operatorsDescription
+///
 void ComputeExpression::readOperator(std::ifstream& readFile)
 {  
-	operatorsDescription = new Operator*[1024];
+	const int OPERATORS_SIZE = 1024;
+
+	operatorsDescription = new Operator*[OPERATORS_SIZE];
 	char letter;
 	char sign;
 	int priority;

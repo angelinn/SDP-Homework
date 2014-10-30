@@ -2,19 +2,30 @@
 #define COMPUTE_EXPRESSION_H
 
 #include <fstream>
+#include "Stack.h"
 
 class Operator;
 
 class ComputeExpression
 {
 public:
+	ComputeExpression();
+
+public:
 	double compute(const char*, const char*);
 
 private:
-	Operator** readOperator(std::ifstream &, int &);
+	void readOperator(std::ifstream &);
 
 private:
-	void checkIfBrackets(Stack<double> &, Stack<Operator*> &);
+	Stack<double> numbers;
+	Stack<Operator*> operators;
+	Operator** operatorsDescription;
+	int operatorsArraySize;
+
+private:
+	void checkIfBrackets(const char *);
+	int checkIfOperator(const char *);
 	bool isOperator(char c);
 	double calculate(double, double, const Operator *);
 	double fetchNumber(const char *&);

@@ -5,6 +5,8 @@
 #include "Operator.h"
 #include <iostream>
 
+ComputeExpression::ComputeExpression() : operatorsDescription(NULL), operatorsArraySize(0)
+{ }
 
 double ComputeExpression::compute(const char* fileName, const char* expression)
 {
@@ -14,60 +16,26 @@ double ComputeExpression::compute(const char* fileName, const char* expression)
 	if (!readFile)
 		throw std::exception("Cannot open file.");
 
-	int operatorsArraySize = 0;
-	Operator** operatorsDescription = readOperator(readFile, operatorsArraySize);
+	readOperator(readFile);
 
 	if (!ValidateExpression::areBracketsValid(expression))
 		throw std::exception("Brackets are not valid mathematically.");
-
-	Stack<double> numbers;
-	Stack<Operator*> operators;
 
 	while (*expression)
 	{
 		Operator* oper = NULL;
 
-		else if (isdigit(*expression))
+		checkIfBrackets(expression);
+
+		if (isdigit(*expression))
 		{
 			numbers.push(fetchNumber(expression));
 			continue;
 		}
 
-		else if (isOperator(*expression))
-		{
-			for (int i = 0; i < operatorsArraySize; ++i)
-			{
-				if (*expression == operatorsDescription[i]->getLetter())
-				{
-					oper = new Operator(*operatorsDescription[i]);
-					break;
-				}
-			}
-
-			if (operators.isEmpty() || operators.peek()->getSign() == OPEN_BRACKET)
-				operators.push(oper);
-
-			else if (operators.peek()->getPriority() > oper->getPriority())
-			{
-				numbers.push(calculate(numbers.pop(), numbers.pop(), operators.pop()));
-				continue;
-			}
-
-			else if (operators.peek()->getPriority() < oper->getPriority())
-				operators.push(oper);
-
-			else if (operators.peek()->getAssociativity() == 1 && oper->getAssociativity() == 1)
-				operators.push(oper);
-
-			else if (operators.peek()->getAssociativity() == 0 && oper->getAssociativity() == 0)
-			{
-				numbers.push(calculate(numbers.pop(), numbers.pop(), operators.pop()));
-				operators.push(oper);
-			}
-
-			else
-				throw std::exception("Operators with same priority, but different associativity.");
-		}
+		if (isOperator(*expression))
+			while (checkIfOperator(expression))
+			{ }
 
 		++expression;
 	}
@@ -78,9 +46,57 @@ double ComputeExpression::compute(const char* fileName, const char* expression)
 	return numbers.pop();
 }
 
-void ComputeExpression::checkIfBrackets(Stack<double>& numbers, Stack<Operator*>& operators)
+int ComputeExpression::checkIfOperator(const char* expression)
 {
+	Operator* oper = NULL;
 
+	for (int i = 0; i < operatorsArraySize; ++i)
+	{
+		if (*expression == operatorsDescription[i]->getLetter())
+		{
+			oper = new Operator(*operatorsDescription[i]);
+			break;
+		}
+	}
+
+	if (operators.isEmpty() || operators.peek()->getSign() == OPEN_BRACKET)
+		operators.push(oper);
+
+	else if (operators.peek()->getPriority() > oper->getPriority())
+	{
+		numbers.push(calculate(numbers.pop(), numbers.pop(), operators.pop()));
+		return 1;
+	}
+
+	else if (operators.peek()->getPriority() < oper->getPriority())
+		operators.push(oper);
+
+	else if (operators.peek()->getAssociativity() == 1 && oper->getAssociativity() == 1)
+		operators.push(oper);
+
+	else if (operators.peek()->getAssociativity() == 0 && oper->getAssociativity() == 0)
+	{
+		numbers.push(calculate(numbers.pop(), numbers.pop(), operators.pop()));
+		operators.push(oper);
+	}
+
+	else
+		throw std::exception("Operators with same priority, but different associativity.");
+
+	return 0;
+}
+
+void ComputeExpression::checkIfBrackets(const char* expression)
+{
+	Operator* oper = NULL;
+	if (*expression == OPEN_BRACKET)
+		operators.push(new Operator(OPEN_BRACKET, OPEN_BRACKET, -1, -1));
+
+	else if (*expression == CLOSE_BRACKET)
+	{
+		while ((oper = operators.pop())->getSign() != OPEN_BRACKET)
+			numbers.push(calculate(numbers.pop(), numbers.pop(), oper));
+	}
 }
 
 double ComputeExpression::fetchNumber(const char*& expression)
@@ -126,9 +142,9 @@ double ComputeExpression::calculate(double left, double right, const Operator* o
 	throw std::invalid_argument("Invalid operator");
 }
 
-Operator** ComputeExpression::readOperator(std::ifstream& readFile, int& size)
-{ 
-	Operator** result = new Operator*[1024];
+void ComputeExpression::readOperator(std::ifstream& readFile)
+{  
+	operatorsDescription = new Operator*[1024];
 	char letter;
 	char sign;
 	int priority;
@@ -143,10 +159,9 @@ Operator** ComputeExpression::readOperator(std::ifstream& readFile, int& size)
 		readFile >> priority;
 		readFile >> associativity;
 
-		result[i] = new Operator(letter, sign, priority, associativity);
+		operatorsDescription[i] = new Operator(letter, sign, priority, associativity);
 		++i;
 	}
 
-	size = i;
-	return result;
+	operatorsArraySize = i;
 }

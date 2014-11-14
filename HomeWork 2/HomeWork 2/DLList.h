@@ -1,7 +1,7 @@
-#ifndef DOUBLY_LINKED_DLList
-#define DOUBLY_LINKED_DLList
+#ifndef DOUBLY_LINKED_LIST
+#define DOUBLY_LINKED_LIST
 
-#include "Node.h"
+#include "DNode.h"
 #include <stdexcept>
 
 template <typename T>
@@ -31,11 +31,15 @@ public:
 	const T& operator[](int) const;
 
 private:
-	int count;
-	Node<T>* first;
-	Node<T>* last;
+	DLList(const DLList &);
+	DLList& operator=(const DLList &);
 
-	Node<T>* getAt(int);
+private:
+	int count;
+	DNode<T>* first;
+	DNode<T>* last;
+
+	DNode<T>* getAt(int);
 };
 
 template <typename T>
@@ -56,12 +60,12 @@ void DLList<T>::clear()
 }
 
 template <typename T>
-Node<T>* DLList<T>::getAt(int position)
+DNode<T>* DLList<T>::getAt(int position)
 {
-	if (position < 0 || position > count)
+	if (position >= count)
 		throw std::out_of_range("Invalid index!");
 
-	Node<T>* result = NULL;
+	DNode<T>* result = NULL;
 	if (position < count / 2)
 	{
 		result = first;
@@ -75,7 +79,7 @@ Node<T>* DLList<T>::getAt(int position)
 	else
 	{
 		result = last;
-		while (position < count)
+		while (position < count - 1)
 		{
 			result = result->prev;
 			++position;
@@ -90,12 +94,12 @@ void DLList<T>::pushFront(const T& element)
 {
 	if (!count)
 	{
-		first = new Node<T>(NULL, element, NULL);
+		first = new DNode<T>(NULL, element, NULL);
 		last = first;
 	}
 	else
 	{
-		first->prev = new Node<T>(NULL, element, first);
+		first->prev = new DNode<T>(NULL, element, first);
 		first = first->prev;
 	}
 	++count;
@@ -106,12 +110,12 @@ void DLList<T>::pushBack(const T& element)
 {
 	if (!count)
 	{
-		last = new Node<T>(NULL, element, NULL);
+		last = new DNode<T>(NULL, element, NULL);
 		first = last;
 	}
 	else
 	{
-		last->next = new Node<T>(last, element, NULL);
+		last->next = new DNode<T>(last, element, NULL);
 		last = last->next;
 	}
 	++count;
@@ -130,8 +134,8 @@ void DLList<T>::pushAt(const T& element, int position)
 
 	else
 	{
-		Node<T>* link = getAt(position - 1);
-		Node<T>* newElement = new Node<T>(link, element, link->next);
+		DNode<T>* link = getAt(position - 1);
+		DNode<T>* newElement = new DNode<T>(link, element, link->next);
 		link->next->prev = newElement;
 		link->next = newElement;
 		++count;
@@ -145,7 +149,7 @@ T DLList<T>::popFront()
 		throw std::exception("DLList is empty!");
 
 	T result = first->data;
-	Node<T>* courier = first;
+	DNode<T>* courier = first;
 
 
 	first = first->next;
@@ -171,7 +175,7 @@ T DLList<T>::popBack()
 	if (count == 1)
 		return popFront();
 
-	Node<T>* preLast = getAt(count - 1);
+	DNode<T>* preLast = getAt(count - 2);
 	T data = last->data;
 	preLast->next = NULL;
 	last->prev = NULL;
@@ -195,8 +199,8 @@ T DLList<T>::popAt(int position)
 	if (position == count - 1)
 		return popBack();
 
-	Node<T>* preTarget = getAt(position - 1);
-	Node<T>* target = preTarget->next;
+	DNode<T>* preTarget = getAt(position - 1);
+	DNode<T>* target = preTarget->next;
 
 	T data = target->data;
 	preTarget->next = target->next;

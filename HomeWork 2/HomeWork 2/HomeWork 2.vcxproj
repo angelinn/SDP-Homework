@@ -77,8 +77,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="DLList.h" />
-    <ClInclude Include="Node.h" />
+    <ClInclude Include="DNode.h" />
     <ClInclude Include="Queue.h" />
+    <ClInclude Include="Node.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />

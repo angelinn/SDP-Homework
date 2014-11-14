@@ -8,25 +8,23 @@ template <typename T>
 class Node
 {
 public:
-	Node(Node<T> *, const T &, Node<T> *);
+	Node(const T &, Node<T> *);
 	Node(const Node<T> &);
 
 	Node<T>* next;
-	Node<T>* prev;
 	T data;
 };
 
 template <typename T>
-Node<T>::Node(Node<T>* nPrev, const T& item, Node<T>* nNext) : prev(nPrev), next(nNext), data(item)
+Node<T>::Node(const T& item, Node<T>* nNext) : next(nNext), data(item)
 { }
 
 template <typename T>
-Node<T>::Node(const Node<T>& n)
+Node<T>::Node(const Node<T>& other)
 {
-	prev = n.prev ? new Node(*n.prev) : NULL;
-	next = n.next ? new Node(*n.next) : NULL;
+	next = other.next ? new Node(*other.next) : NULL;
 
-	data = n.data;
+	data = other.data;
 }
 
 #endif // NODE_H

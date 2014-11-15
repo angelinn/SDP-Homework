@@ -9,17 +9,16 @@ class Queue
 {
 public:
 	Queue();
+	Queue(const Queue &);
+	Queue& operator=(const Queue &);
 	~Queue();
 
 public:
 	int getSize() const { return count; }
 	bool isEmpty() const { return !count; }
+	void clear();
 	void enqueue(const T &);
 	T dequeue();
-
-private:
-	Queue(const Queue &);
-	Queue& operator=(const Queue &);
 
 private:
 	int count;
@@ -28,6 +27,7 @@ private:
 	Node<T>* last;
 
 	Node<T>* getAt(int);
+	void copyFrom(const Queue &);
 };
 
 template <typename T>
@@ -35,7 +35,38 @@ Queue<T>::Queue() : first(NULL), last(NULL), count(0)
 { }
 
 template <typename T>
+Queue<T>::Queue(const Queue& other)
+{
+	copyFrom(other);
+}
+
+template <typename T>
+Queue<T>& Queue<T>::operator=(const Queue& other)
+{
+	if (this != &other)
+	{
+		clear();
+		copyFrom(other);
+	}
+}
+
+template <typename T>
 Queue<T>::~Queue()
+{
+	clear();
+}
+
+template <typename T>
+void Queue<T>::copyFrom(const Queue& other)
+{
+	first = new Node<T>(*other.first);
+	last = new Node<T>(*other.last);
+
+	count = other.count;
+}
+
+template <typename T>
+void Queue<T>::clear()
 {
 	while (!isEmpty())
 		dequeue();

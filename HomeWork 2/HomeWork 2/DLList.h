@@ -25,10 +25,38 @@ public:
 	T popFront();
 	T popBack();
 	T popAt(int);
+//public:
+//	T& operator[](int);
+//	const T& operator[](int) const;
 
 public:
-	T& operator[](int);
-	const T& operator[](int) const;
+	class Iterator
+	{
+	public:
+		Iterator& operator++();
+		const Iterator& operator++() const;
+
+		bool operator==(const Iterator &) const;
+		bool operator!=(const Iterator &) const;
+
+		T operator*() const;
+
+	private:
+		Iterator(DNode<T> *);
+
+	private:
+		DNode<T>* current;
+	};
+
+	Iterator begin()
+	{
+		return Iterator(first);
+	}
+
+	Iterator end()
+	{
+		return Iterator(last);
+	}
 
 private:
 	DLList(const DLList &);
@@ -41,6 +69,46 @@ private:
 
 	DNode<T>* getAt(int);
 };
+
+template <typename T>
+DLList<T>::Iterator::Iterator(DNode<T>* curr) : current(curr)
+{  }
+
+template <typename T>
+const typename DLList<T>::Iterator& DLList<T>::Iterator::operator++() const
+{
+	if (current)
+		current = current->next;
+
+	return *this;
+}
+
+template <typename T>
+typename DLList<T>::Iterator& DLList<T>::Iterator::operator++()
+{
+	return const_cast<DLList<T>::Iterator&> (static_cast<const DLList<T>::Iterator &> ++(this));
+}
+
+template <typename T>
+bool DLList<T>::Iterator::operator==(const Iterator& other) const
+{
+	return current == other.current;
+}
+
+template <typename T>
+bool DLList<T>::Iterator::operator!=(const Iterator& other) const
+{
+	return ! ((*this) == other);
+}
+
+template <typename T>
+T typename DLList<T>::Iterator::operator*() const
+{
+	if (current)
+		return current->data;
+
+	throw std::exception("No element selected.");
+}
 
 template <typename T>
 DLList<T>::DLList() : first(NULL), last(NULL), count(0)
@@ -216,5 +284,17 @@ T DLList<T>::popAt(int position)
 
 	return data;
 }
+
+//template <typename T>
+//const T& DLList<T>::operator[](int index) const
+//{
+//	return getAt(index - 1)->data;
+//}
+//
+//template <typename T>
+//T& DLList<T>::operator[](int index)
+//{
+//	return const_cast<T &> (static_cast<const DLList<T>> (*this)[index]);
+//}
 
 #endif // DOUBLE_LINKED_DLList

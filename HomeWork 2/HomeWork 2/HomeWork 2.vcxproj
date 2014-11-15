@@ -78,11 +78,13 @@
   <ItemGroup>
     <ClInclude Include="DLList.h" />
     <ClInclude Include="DNode.h" />
+    <ClInclude Include="Market.h" />
     <ClInclude Include="Queue.h" />
     <ClInclude Include="Node.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Market.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

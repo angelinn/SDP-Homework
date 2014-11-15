@@ -16,9 +16,12 @@ public:
 
 private:
 	int getLeastFilledDeck();
+	void addSingleClient(Client);
+	void addDeck();
 
 private:
 	int maxCashDecks;
+	Queue<Client> expressDeck;
 	DLList<Queue<Client>> decks;
 };
 

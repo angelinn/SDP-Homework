@@ -25,9 +25,6 @@ public:
 	T popFront();
 	T popBack();
 	T popAt(int);
-//public:
-//	T& operator[](int);
-//	const T& operator[](int) const;
 
 public:
 	class Iterator
@@ -38,14 +35,15 @@ public:
 
 		bool operator==(const Iterator &) const;
 		bool operator!=(const Iterator &) const;
-
 		T operator*() const;
 
 	private:
 		Iterator(DNode<T> *);
 
 	private:
-		DNode<T>* current;
+		mutable DNode<T>* current;
+
+		friend class DLList;
 	};
 
 	Iterator begin()
@@ -86,7 +84,7 @@ const typename DLList<T>::Iterator& DLList<T>::Iterator::operator++() const
 template <typename T>
 typename DLList<T>::Iterator& DLList<T>::Iterator::operator++()
 {
-	return const_cast<DLList<T>::Iterator&> (static_cast<const DLList<T>::Iterator &> ++(this));
+	return const_cast<DLList<T>::Iterator&> (static_cast<const DLList<T>::Iterator &> (*this).operator++());
 }
 
 template <typename T>

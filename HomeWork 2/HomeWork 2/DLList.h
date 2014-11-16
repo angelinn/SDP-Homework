@@ -9,24 +9,6 @@ template <typename T>
 class DLList
 {
 public:
-	DLList();
-	~DLList();
-
-public:
-	int getSize() { return count; }
-	bool isEmpty() { return !count; }
-	void clear();
-
-public:
-	void pushFront(const T &);
-	void pushBack(const T &);
-	void pushAt(const T &, int);
-
-	T popFront();
-	T popBack();
-	T popAt(int);
-
-public:
 	class Iterator
 	{
 	public:
@@ -35,8 +17,9 @@ public:
 
 		bool operator==(const Iterator &) const;
 		bool operator!=(const Iterator &) const;
-		operator bool() { return current; }
+		operator bool() const { return current != NULL; }
 		T operator*() const;
+		T& operator*();
 
 	private:
 		Iterator(DNode<T> *);
@@ -47,15 +30,26 @@ public:
 		friend class DLList;
 	};
 
-	Iterator begin()
-	{
-		return Iterator(first);
-	}
+public:
+	DLList();
+	~DLList();
 
-	Iterator end()
-	{
-		return Iterator(last);
-	}
+public:
+	int getSize() const { return count; }
+	bool isEmpty() const { return !count; }
+	void clear();
+
+public:
+	void pushFront(const T &);
+	void pushBack(const T &);
+	void pushAt(const T &, int);
+
+	T popFront();
+	T popBack();
+	T popAt(const Iterator &);
+
+	Iterator begin();
+	Iterator end();
 
 private:
 	DLList(const DLList &);
@@ -101,12 +95,33 @@ bool DLList<T>::Iterator::operator!=(const Iterator& other) const
 }
 
 template <typename T>
-T typename DLList<T>::Iterator::operator*() const
+T& DLList<T>::Iterator::operator*()
 {
 	if (current)
 		return current->data;
 
 	throw std::exception("No element selected!");
+}
+
+template <typename T>
+T DLList<T>::Iterator::operator*() const
+{
+	if (current)
+		return current->data;
+
+	throw std::exception("No element selected!");
+}
+
+template <typename T>
+typename DLList<T>::Iterator DLList<T>::begin()
+{
+	return Iterator(first);
+}
+
+template <typename T>
+typename DLList<T>::Iterator DLList<T>::end()
+{
+	return Iterator(last);
 }
 
 template <typename T>
@@ -255,18 +270,18 @@ T DLList<T>::popBack()
 }
 
 template <typename T>
-T DLList<T>::popAt(int position)
+T DLList<T>::popAt(const typename DLList<T>::Iterator& iter)
 {
-	if (position < 0 || position >= count)
-		throw std::out_of_range("Invalid position!");
+	if (!iter)
+		throw std::exception("NULL Iterator");
 
-	if (!position)
+	if (iter == begin())
 		return popFront();
 
-	if (position == count - 1)
+	if (iter == end())
 		return popBack();
 
-	DNode<T>* preTarget = getAt(position - 1);
+	DNode<T>* preTarget = iter.current->prev;
 	DNode<T>* target = preTarget->next;
 
 	T data = target->data;
@@ -283,17 +298,5 @@ T DLList<T>::popAt(int position)
 
 	return data;
 }
-
-//template <typename T>
-//const T& DLList<T>::operator[](int index) const
-//{
-//	return getAt(index - 1)->data;
-//}
-//
-//template <typename T>
-//T& DLList<T>::operator[](int index)
-//{
-//	return const_cast<T &> (static_cast<const DLList<T>> (*this)[index]);
-//}
 
 #endif // DOUBLE_LINKED_DLList

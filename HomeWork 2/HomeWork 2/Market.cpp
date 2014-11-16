@@ -1,7 +1,7 @@
 #include "Market.h"
+#include <iostream>
 
-typedef DLList<Queue<Client>>::Iterator ListIterator;
-int Market::currentID = 0;
+int Market::currentID = 1;
 
 Market::Market(int numberOfAllCashDecks) : maxCashDecks(numberOfAllCashDecks)
 {
@@ -10,30 +10,34 @@ Market::Market(int numberOfAllCashDecks) : maxCashDecks(numberOfAllCashDecks)
 
 void Market::AddClient(Client* clients, int number)
 {
-	for (int i = 0; i < number; ++i)
-		addSingleClient(clients[i]);
+	tick(clients, number);
 }
 
-void Market::addSingleClient(Client client)
+void Market::arrangeClient(Client& client)
 {
+
 	int minQueue = getLeastFilledDeck();
 
-	client.ID = Market::currentID;
-	++Market::currentID;
+		int deskCounter = 1;
 
-	if (client.numberOfGoods <= 3 && expressDeck.getSize() < 2 * decks.getSize())
-		expressDeck.enqueue(client);
-	else
-		for (ListIterator iter = decks.begin(); iter; ++iter)
+		for (ListIterator iter = decks.begin(); iter; ++iter, ++deskCounter)
+		{
 			if (minQueue == (*iter).getSize())
+			{
 				(*iter).enqueue(client);
+				setClientState(client, deskCounter, (*iter).getSize());
+
+				return;
+			}
+		}
+		throw std::exception("Something went terribly wrong .. ");
 }
 
 bool Market::areThereFullDecks()
 {
 	for (ListIterator iter = decks.begin(); iter; ++iter)
 	{
-		if ((*iter).getSize() > decks.getSize())
+		if ((*iter).getSize() > maxCashDecks)
 			return true;
 	}
 	
@@ -42,20 +46,152 @@ bool Market::areThereFullDecks()
 
 bool Market::moveClientsIfNeeded()
 {
-	bool moved = false;
-
 	for (ListIterator iter = decks.begin(); iter; ++iter)
 	{
-		if ((*iter).getSize() > decks.getSize())
+		for (ListIterator iter2 = decks.begin(); iter2; ++iter2)
+		{
+			if ((*iter).getSize() - (*iter2).getSize() > maxCashDecks / 8)
+			{
+				Queue<Client> placeholder;
+				Queue<Client> clientsToBeMoved;
+
+				int size = (*iter).getSize();
+				int middle = size / 2;
+
+				for (int i = 0; i < middle; ++i)
+					placeholder.enqueue((*iter).dequeue());
+
+				
+				clientsToBeMoved = (*iter);
+				(*iter) = placeholder;
+
+				while (!clientsToBeMoved.isEmpty())
+					arrangeClient(clientsToBeMoved.dequeue());
+						
+				return true;
+			}
+		}	
+	}
+	return false;
+}
+
+void Market::setClientState(Client client, int deskCounter, int position)
+{
+	bool set = false;
+
+	for (DLList<ClientState>::Iterator clIter = states.begin(); clIter; ++clIter)
+	{
+		if ((*clIter).client->ID == client.ID)
+		{
+			states.popAt(clIter);
+			states.pushBack(ClientState{ deskCounter, position, &client });
+			set = true;
+			break;
+		}
+	}
+
+	if (!set)
+		states.pushBack(ClientState{ deskCounter, position, &client });
+}
+
+bool Market::closeDeckIfNeeded()
+{
+	for (ListIterator iter = decks.begin(); iter; ++iter)
+	{
+		if ((*iter).getSize() < static_cast<double>(maxCashDecks) / 10.0)
+		{
+			for (int i = 0; i < (*iter).getSize(); ++i)
+				arrangeClient((*iter).dequeue());
+
+			decks.popAt(iter);
 			return true;
+		}
+	}
+	return false;
+}
+
+void Market::addAllClients(Client* clients, int number)
+{
+	for (int i = 0; i < number; ++i)
+	{
+		if (!clients || number < 1)
+			return;
+
+		clients[i].ID = Market::currentID;
+		++Market::currentID;
+
+		if (!clients[i].numberOfGoods)
+			continue;
+
+		if (clients[i].numberOfGoods <= 3 && expressDeck.getSize() < 2 * maxCashDecks)
+		{
+			expressDeck.enqueue(clients[i]);
+			setClientState(clients[i], 0, expressDeck.getSize());
+		}
+
+		else
+			arrangeClient(clients[i]);
 	}
 }
 
-void Market::tick()
+void Market::tick(Client* clients, int number)
 {
-	if (areThereFullDecks())
-		openDeck();
-	else if 
+	processClients();
+
+	addAllClients(clients, number);
+
+	if (decks.getSize() > 1 && closeDeckIfNeeded())
+	{  }
+
+	else if (moveClientsIfNeeded())
+	{  }
+
+	else if (decks.getSize() < maxCashDecks && areThereFullDecks())
+	{
+		try
+		{
+			openDeck();
+			moveClientsIfNeeded();
+		}
+		catch (std::exception& e)
+		{
+			std::cerr << e.what() << std::endl;
+		}
+
+	}
+}
+
+void Market::processClients()
+{
+	for (ListIterator iter = decks.begin(); iter; ++iter)
+	{
+		if (!(*iter).isEmpty())
+		{
+			--(*iter).peek().numberOfGoods;
+
+			if (isClientReadyToGo((*iter).peek())) 
+				setClientState((*iter).dequeue(), -1, -1);
+		}
+	}
+
+	if (!expressDeck.isEmpty())
+	{
+		--expressDeck.peek().numberOfGoods;
+
+		if (isClientReadyToGo(expressDeck.peek()))
+			setClientState(expressDeck.dequeue(), -1, -1);
+	}
+
+}
+
+bool Market::isClientReadyToGo(const Client& client)
+{
+	if (client.creditCard && client.numberOfGoods == -1)
+		return true;
+	if (!client.creditCard && client.numberOfGoods == -2)
+		return true;
+
+	return false;
 }
 
 void Market::openDeck()
@@ -66,22 +202,19 @@ void Market::openDeck()
 	decks.pushBack(*(new Queue<Client>));
 }
 
-void Market::closeDeck()
-{
-
-}
-
 int Market::getLeastFilledDeck()
 {
-	ListIterator iter = decks.begin();
-	int min = (*iter).getSize();
+	int min = INT_MAX;
 
 
-	for (; iter; ++iter)
+	for (ListIterator iter = decks.begin(); iter; ++iter)
 	{
 		if ((*iter).getSize() < min)
 			min = (*iter).getSize();
 	}
+
+	if (min == INT_MAX)
+		throw std::exception("Something went really wrong /min/");
 
 	return min;
 }
@@ -103,12 +236,11 @@ MarketState Market::getMarketState()
 
 ClientState Market::getClientState(int id)
 {
-	ClientState state;
-
-	for (ListIterator iter = decks.begin(), end = decks.end(); iter != end; ++iter)
+	for (DLList<ClientState>::Iterator iter = states.begin(); iter; ++iter)
 	{
-
+		if (id == (*iter).client->ID)
+			return (*iter);
 	}
 
-	return state;
+	throw std::exception("Client not found!");
 }

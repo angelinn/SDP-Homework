@@ -1,5 +1,5 @@
-#ifndef DNode_H
-#define DNode_H
+#ifndef DNODE_H
+#define DNODE_H
 
 #include <stdlib.h>
 
@@ -29,4 +29,4 @@ DNode<T>::DNode(const DNode<T>& other)
 	data = other.data
 }
 
-#endif // DNode_H
+#endif // DNODE_H

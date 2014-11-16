@@ -19,6 +19,7 @@ public:
 	void clear();
 	void enqueue(const T &);
 	T dequeue();
+	T& peek();
 
 private:
 	int count;
@@ -48,6 +49,8 @@ Queue<T>& Queue<T>::operator=(const Queue& other)
 		clear();
 		copyFrom(other);
 	}
+
+	return *this;
 }
 
 template <typename T>
@@ -114,6 +117,15 @@ T Queue<T>::dequeue()
 
 	--count;
 	return data;
+}
+
+template <typename T>
+T& Queue<T>::peek()
+{
+	if (isEmpty())
+		throw std::exception("Queue is empty!");
+
+	return last->data;
 }
 
 #endif // QUEUE_H

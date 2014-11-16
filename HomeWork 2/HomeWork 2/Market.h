@@ -1,3 +1,6 @@
+#ifndef MARKET_H
+#define MARKET_H
+
 #include "DLList.h"
 #include "Queue.h"
 
@@ -5,6 +8,7 @@ struct Client;
 struct MarketState;
 struct ClientState;
 
+typedef DLList<Queue<Client>>::Iterator ListIterator;
 
 class Market
 {
@@ -15,22 +19,30 @@ public:
 	ClientState getClientState(int ID); // връща състоянието на клиента
 
 public:
-	static int currentID;
+	static int currentID; // Holds the ID for the Clients
 
 private:
-	int getLeastFilledDeck();
-	void addSingleClient(Client);
-	void openDeck();
-	void tick();
-	void closeDeck();
-	bool areThereFullDecks();
-	bool moveClientsIfNeeded();
+	void addAllClients(Client *, int); // Adds an array of clients to the store
+	void arrangeClient(Client &); // Puts the client in the least queue
+	int getLeastFilledDeck(); // Gets the least queue
 
 private:
-	int maxCashDecks;
-	Queue<Client> expressDeck;
-	DLList<Queue<Client>> decks;
-	DLList<ClientState> states;
+	void tick(Client *, int); // The main function that does the ticking
+	void openDeck(); // Opens a new deck
+	bool areThereFullDecks(); // Checks if there are full decks
+	bool moveClientsIfNeeded(); // Moves clients if needed
+	bool closeDeckIfNeeded(); // Closes deck if needed (lol)
+
+private:
+	void processClients(); // Processes one grocery
+	bool isClientReadyToGo(const Client &); // Returns true or false depend if the client is ready to leave
+	void setClientState(Client, int, int); // Sets the client state into the array
+
+private:
+	int maxCashDecks; // Holds the maximum for available cash decks
+	Queue<Client> expressDeck; // Variable for the express cash deck
+	DLList<Queue<Client>> decks; // The cash decks
+	DLList<ClientState> states; // A list for the Clients' states
 };
 
 struct ClientState
@@ -45,8 +57,6 @@ struct MarketState
 	int numberOfCashDesk; // броя на касите които са отворили в момента
 	int * numberOfClientsAtCashDecsk; // броя на клиентите на всяка каса в този момент
 	int numberOfClientsAtExpressCashDeck;
-
-	~MarketState() { delete numberOfClientsAtCashDecsk; }
 };
 
 struct Client
@@ -55,3 +65,5 @@ struct Client
 	int numberOfGoods; // брой на покупките на клиента
 	bool creditCard; // истина ако плаща с крединта карта
 };
+
+#endif // MARKET_H

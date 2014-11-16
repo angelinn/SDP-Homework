@@ -59,8 +59,8 @@ Queue<T>::~Queue()
 template <typename T>
 void Queue<T>::copyFrom(const Queue& other)
 {
-	first = new Node<T>(*other.first);
-	last = new Node<T>(*other.last);
+	first = other.first ? new Node<T>(*other.first) : NULL;
+	last = other.last ? new Node<T>(*other.last) : NULL;
 
 	count = other.count;
 }

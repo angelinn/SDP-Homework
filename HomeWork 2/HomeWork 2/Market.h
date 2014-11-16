@@ -14,15 +14,23 @@ public:
 	MarketState getMarketState(); // връща състоянието на магазина
 	ClientState getClientState(int ID); // връща състоянието на клиента
 
+public:
+	static int currentID;
+
 private:
 	int getLeastFilledDeck();
 	void addSingleClient(Client);
-	void addDeck();
+	void openDeck();
+	void tick();
+	void closeDeck();
+	bool areThereFullDecks();
+	bool moveClientsIfNeeded();
 
 private:
 	int maxCashDecks;
 	Queue<Client> expressDeck;
 	DLList<Queue<Client>> decks;
+	DLList<ClientState> states;
 };
 
 struct ClientState
@@ -37,6 +45,8 @@ struct MarketState
 	int numberOfCashDesk; // броя на касите които са отворили в момента
 	int * numberOfClientsAtCashDecsk; // броя на клиентите на всяка каса в този момент
 	int numberOfClientsAtExpressCashDeck;
+
+	~MarketState() { delete numberOfClientsAtCashDecsk; }
 };
 
 struct Client

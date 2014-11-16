@@ -1,10 +1,11 @@
 #include "Market.h"
 
 typedef DLList<Queue<Client>>::Iterator ListIterator;
+int Market::currentID = 0;
 
 Market::Market(int numberOfAllCashDecks) : maxCashDecks(numberOfAllCashDecks)
 {
-	addDeck();
+	openDeck();
 }
 
 void Market::AddClient(Client* clients, int number)
@@ -17,26 +18,66 @@ void Market::addSingleClient(Client client)
 {
 	int minQueue = getLeastFilledDeck();
 
-	for (ListIterator iter = decks.begin(), end = decks.end(); iter != end; ++iter)
-		if (minQueue == (*iter).getSize())
-			(*iter).enqueue(client);
+	client.ID = Market::currentID;
+	++Market::currentID;
+
+	if (client.numberOfGoods <= 3 && expressDeck.getSize() < 2 * decks.getSize())
+		expressDeck.enqueue(client);
+	else
+		for (ListIterator iter = decks.begin(); iter; ++iter)
+			if (minQueue == (*iter).getSize())
+				(*iter).enqueue(client);
 }
 
-void Market::addDeck()
+bool Market::areThereFullDecks()
+{
+	for (ListIterator iter = decks.begin(); iter; ++iter)
+	{
+		if ((*iter).getSize() > decks.getSize())
+			return true;
+	}
+	
+	return false;
+}
+
+bool Market::moveClientsIfNeeded()
+{
+	bool moved = false;
+
+	for (ListIterator iter = decks.begin(); iter; ++iter)
+	{
+		if ((*iter).getSize() > decks.getSize())
+			return true;
+	}
+}
+
+void Market::tick()
+{
+	if (areThereFullDecks())
+		openDeck();
+	else if 
+}
+
+void Market::openDeck()
 {
 	if (decks.getSize() >= maxCashDecks)
 		throw std::exception("Maximum Cash Decks limit reached!");
 
-	decks.pushBack(*new Queue<Client>);
+	decks.pushBack(*(new Queue<Client>));
+}
+
+void Market::closeDeck()
+{
+
 }
 
 int Market::getLeastFilledDeck()
 {
 	ListIterator iter = decks.begin();
 	int min = (*iter).getSize();
-	++iter;
 
-	for (; true; ++iter)
+
+	for (; iter; ++iter)
 	{
 		if ((*iter).getSize() < min)
 			min = (*iter).getSize();
@@ -47,12 +88,27 @@ int Market::getLeastFilledDeck()
 
 MarketState Market::getMarketState()
 {
-	MarketState b;
-	return b;
+	MarketState state;
+	state.numberOfCashDesk = decks.getSize();
+	state.numberOfClientsAtExpressCashDeck = expressDeck.getSize();
+
+	state.numberOfClientsAtCashDecsk = new int[decks.getSize()];
+
+	ListIterator iter = decks.begin();
+	for (int i = 0; i < decks.getSize(); ++i, ++iter)
+		state.numberOfClientsAtCashDecsk[i] = (*iter).getSize();
+
+	return state;
 }
 
 ClientState Market::getClientState(int id)
 {
-	ClientState a;
-	return a;
+	ClientState state;
+
+	for (ListIterator iter = decks.begin(), end = decks.end(); iter != end; ++iter)
+	{
+
+	}
+
+	return state;
 }

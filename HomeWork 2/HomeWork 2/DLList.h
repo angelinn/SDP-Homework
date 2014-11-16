@@ -35,6 +35,7 @@ public:
 
 		bool operator==(const Iterator &) const;
 		bool operator!=(const Iterator &) const;
+		operator bool() { return current; }
 		T operator*() const;
 
 	private:
@@ -105,7 +106,7 @@ T typename DLList<T>::Iterator::operator*() const
 	if (current)
 		return current->data;
 
-	throw std::exception("No element selected.");
+	throw std::exception("No element selected!");
 }
 
 template <typename T>

@@ -22,7 +22,7 @@ Node<T>::Node(const T& item, Node<T>* nNext) : next(nNext), data(item)
 template <typename T>
 Node<T>::Node(const Node<T>& other)
 {
-	next = other.next ? new Node(*other.next) : NULL;
+	next = other.next ? new Node<T>(*other.next) : NULL;
 
 	data = other.data;
 }

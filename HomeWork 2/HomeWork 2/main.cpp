@@ -1,29 +1,17 @@
 #include <iostream>
-#include "DLList.h"
-#include "Queue.h"
-#include <ctime>
-
+#include "Market.h"
 
 int main()
 {
 	try
 	{
-		DLList<int> list;
-		Queue<int> queue;
+		Client a;
+		a.creditCard = 0;
+		a.ID = -1;
+		a.numberOfGoods = 2;
 
-		double start = time(NULL);
-		for (size_t i = 0; i < 1000; i++)
-		{
-			//list.pushFront(i);
-			queue.enqueue(i);
-		}
-
-		for (size_t i = 0; i < 1000; i++)
-		{
-			std::cout << queue.dequeue() << std::endl;//list.popBack() << std::endl;
-		}
-		double end = time(NULL);
-		std::cout << "it took " << end - start << std::endl;
+		Market kaufland(5);
+		kaufland.AddClient(&a, 1);
 	}
 	catch (std::exception& e)
 	{

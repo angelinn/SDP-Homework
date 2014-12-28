@@ -3,9 +3,11 @@
 
 #include <stdexcept>
 
-class InvalidTreeOperation
+class InvalidTreeOperation : public std::runtime_error
 {
-
+public:
+	InvalidTreeOperation(const char* message) : runtime_error(message)
+	{  }
 };
 
 #endif // INVALID_TREE_OPERATION_H

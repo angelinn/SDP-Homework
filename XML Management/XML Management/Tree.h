@@ -2,6 +2,7 @@
 #define TREE_H
 
 #include "TNode.h"
+#include "InvalidTreeOperation.h"
 #include <iostream>
 #include <string>
 
@@ -14,7 +15,7 @@ public:
 
 public:
 	void insertNext(const T &);
-	void insert(const T &, const T &, const TNode<T>* node = NULL);
+	bool insert(const T &, const T &, const TNode<T>* node = NULL);
 	void insert(const T &);
 
 	void print() const
@@ -56,21 +57,23 @@ void Tree<T>::deleteTree(TNode<T>*& node)
 }
 
 template <typename T>
-void Tree<T>::insert(const T& item, const T& in, const TNode<T>* node)
+bool Tree<T>::insert(const T& item, const T& in, const TNode<T>* node)
 {
 	if (!root)
 		root = new TNode<T>(item);
 	else if (root->data == in)
 	{
 		root->children.pushBack(new TNode<T>(item));
-		return;
+		return true;
 	}
 
 	if (!root->children.isEmpty())
 	{
 		for (DLList<TNode<T>*>::Iterator iter = root->children.begin(); iter; ++iter)
-			insert(item, in, *iter);
+			if (insert(item, in, *iter))
+				break;
 	}
+	return false;
 }
 
 template <typename T>
@@ -79,7 +82,7 @@ void Tree<T>::insert(const T& item)
 	if (!root)
 		root = new TNode<T>(item);
 	else
-		throw std::exception();
+		throw InvalidTreeOperation("root not null");
 }
 
 template <typename T>

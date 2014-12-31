@@ -4,12 +4,12 @@
 #include <string>
 
 const char* CLI::HELP_MESSAGE = "addtag {name} {content} {path} - adds a tag to the current path\n"
-								"removetag {path} {true/false - delete all beneath this tag} - removes a tag from the path\n"
+								"removetag {path} {true/false - delete all beneath this tag} - removes a tag\n"
 								"changetag {new_name} {new_content} {path} - changes a current tag\n"
 								"\naddattribute {name} {value} {path} - adds an attribute to the desired tag"
 								"removeattribute {name} {path} - removes an attribute from the desired tag\n"
 								"changeattribute {old_name} {new_name} {new_value} {path} - changes an attribute\n"
-								"send > {file} {true/false - pretty print} - sends the xml document to a file\n"
+								"\nsend > {file} {true/false - pretty print} - sends the xml document to a file\n"
 								"send {true/false - pretty print} - sends the xml document to the current interface\n";
 
 
@@ -27,9 +27,17 @@ void CLI::go()
 		{
 			parseCommand(result);
 		}
-		catch (std::exception e)
+		catch (std::invalid_argument e)
 		{
 			std::cerr << e.what() << std::endl;
+		}
+		catch (TreeException e)
+		{
+			std::cerr << e.what() << std::endl;
+		}
+		catch (std::exception)
+		{
+			std::cerr << "Something isn't right!" << std::endl;
 		}
 		result.clear();
 	}
@@ -48,7 +56,7 @@ void CLI::parseCommand(DLList<std::string>& command)
 		else if (!firstPart.compare("remove"))
 			manager.workTag(command, XMLManager::REMOVE);
 		else
-			throw std::exception("Invalid command");
+			throw std::invalid_argument("Invalid command");
 	}
 	else if (cmd.find("attribute") != std::string::npos)
 	{
@@ -60,7 +68,7 @@ void CLI::parseCommand(DLList<std::string>& command)
 		else if (!firstPart.compare("remove"))
 			manager.workAttributes(command, XMLManager::REMOVE);
 		else
-			throw std::exception("Invalid command");
+			throw std::invalid_argument("Invalid command");
 	}
 	else if (cmd.find("send") != std::string::npos)
 	{

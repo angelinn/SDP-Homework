@@ -19,7 +19,7 @@ void XMLManager::workTag(DLList<std::string>& command, XMLManager::STATUS status
 	if (status == REMOVE)
 	{
 		path = command.popFront();
-		if (command.popFront().compare("true"))
+		if (!command.popFront().compare("true"))
 			removeTag(path, true);
 		else
 			removeTag(path);

@@ -36,6 +36,7 @@ void Tree::insertTag(const Tag& item, std::string& path)
 	DLList<TNode*> resultNodes;
 
 	getLastNode(path.c_str(), root, resultNodes);
+
 	for (ListIterator iter = resultNodes.begin(); iter; ++iter)
 		(*iter)->children.pushBack(new TNode(item));
 }
@@ -138,10 +139,8 @@ void Tree::getLastNode(const char* path, TNode*& node, DLList<TNode*>& resultNod
 			delete[] workPath;
 
 			resultNodes.pushBack(node);
-			return;
 		}
-		else
-			throw InvalidTreeOperation("Unsupported tag entered.");
+		return;
 	}
 
 	char* result = new char[strlen(workPath) + 1];

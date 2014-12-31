@@ -6,6 +6,7 @@
 class Attribute
 {
 public:
+	Attribute(const char* k) : key(k) {  }
 	Attribute(const char* k, const char* v) : key(k), value(v) {  }
 
 public:

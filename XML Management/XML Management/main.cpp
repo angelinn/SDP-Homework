@@ -10,14 +10,15 @@ int main()
 		XMLManager manager(std::cout);
 		Attribute dsa("this", "very_good");
 		Tag a("root", "Very root.");
-		a.addAttribute(dsa);
-		a.addAttribute(dsa);
 		Tag b("person");
 		Tag c("email", "MAIMUNKA@HOTMAIL.COM");
 		manager.addTag(a, "");
 		manager.addTag(b, "root");
 		manager.addTag(c, "root/person");
-		manager.removeTag("root/person", true);
+		manager.addAttribute(dsa, "root/person/email");
+		manager.changeAttribute(dsa.getKey().c_str(), "boomshakalaka", "root/person/email");
+		manager.removeAttribute("boomshakalaka", "root/person/email");
+		//manager.removeTag("root/person", true);
 		manager.print();
 
 		//const char* str = "root/email/job";

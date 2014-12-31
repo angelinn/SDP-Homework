@@ -26,6 +26,29 @@ void Tag::addAttribute(const Attribute& attribute)
 	attributes.pushBack(attribute); 
 }
 
+void Tag::changeAttribute(const Attribute& old, const Attribute& newAttribute)
+{
+	for (DLList<Attribute>::Iterator iter = attributes.begin(); iter; ++iter)
+	{
+		if ((*iter).getKey() == old.getKey())
+			(*iter) = newAttribute;
+	}
+}
+
+void Tag::removeAttribute(const Attribute& attribute)
+{
+	for (DLList<Attribute>::Iterator iter = attributes.begin(); iter; ++iter)
+	{
+		if ((*iter).getKey() == attribute.getKey())
+		{
+			DLList<Attribute>::Iterator deleter = iter;
+			++iter;
+			attributes.popAt(deleter);
+			--iter;
+		}
+	}
+}
+
 bool Tag::isSelfClosing() const
 {
 	return selfClosing;
@@ -55,9 +78,3 @@ std::string Tag::getNameAndAttributes() const
 
 	return result;
 }
-
-//void Tag::printMe() const
-//{
-//	std::string result;
-//	result += 
-//}

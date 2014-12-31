@@ -16,9 +16,8 @@ public:
 
 public:
 	void addAttribute(const Attribute &, const char *);
-	void changeAttribute(const Attribute &, const char *);
-
-	void removeAttribute(const char *, const char *);
+	void changeAttribute(const char *, const Attribute &, const char *);
+	void removeAttribute(const Attribute &, const char *);
 
 	void print() const;
 private:

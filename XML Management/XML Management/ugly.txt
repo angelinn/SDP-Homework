@@ -1,0 +1,1 @@
+<root><money><MUCH dollars="10000">CASH</MUCH></money></root>

@@ -1,9 +1,9 @@
 #include "Tag.h"
 
-Tag::Tag(const char* n, bool selfClose) : name(n), selfClosing(selfClose)
+Tag::Tag(std::string n, bool selfClose) : name(n), selfClosing(selfClose)
 {  }
 
-Tag::Tag(const char* n, const char* c, bool selfClose) : name(n), content(c), selfClosing(selfClose) 
+Tag::Tag(std::string n, std::string c, bool selfClose) : name(n), content(c), selfClosing(selfClose) 
 {  }
 
 std::string Tag::getName() const
@@ -54,12 +54,20 @@ bool Tag::isSelfClosing() const
 	return selfClosing;
 }
 
-std::string Tag::getNameAndAttributes() const
+std::string Tag::getNameAndAttributes(bool pretty) const
 {
+	std::string space, new_line;
+	if (pretty)
+	{
+		space = " ";
+		new_line = "\n";
+	}
+
 	std::string result;
 	result += "<" + name;
 
-	std::string finalizer = selfClosing ? "/>\n" : ">\n";
+	std::string finalizer = selfClosing ? "/>" : ">";
+	finalizer += new_line;
 
 	if (attributes.isEmpty())
 		result += finalizer;
@@ -70,7 +78,7 @@ std::string Tag::getNameAndAttributes() const
 		{
 			result += (*iter).getKey() + "=\"" + (*iter).getValue() + "\"";
 			if (++iter)
-				result += " ";
+				result += space;
 			else
 				result += finalizer;
 		}

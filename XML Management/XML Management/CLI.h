@@ -6,16 +6,16 @@
 class CLI
 {
 public:
-	CLI();
 	void go();
 
 private:
 	static const char* HELP_MESSAGE;
 
 private:
-	void help();
+	void help() const;
 	void split(std::string &, char, DLList<std::string> &);
 	void parseCommand(DLList<std::string> &);
+	void saveToFile(std::string &, bool) const;
 	XMLManager manager;
 };
 

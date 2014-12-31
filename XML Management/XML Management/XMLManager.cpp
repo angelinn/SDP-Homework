@@ -1,9 +1,6 @@
 #include "XMLManager.h"
 
-XMLManager::XMLManager(std::ostream& out) : output(&out)
-{  }
-
-void XMLManager::addTag(const Tag& tag, const char* path)
+void XMLManager::addTag(const Tag& tag, std::string & path)
 {
 	try
 	{
@@ -23,30 +20,73 @@ void XMLManager::workTag(DLList<std::string>& command, XMLManager::STATUS status
 	{
 		path = command.popFront();
 		if (command.popFront().compare("true"))
-			removeTag(path.c_str(), true);
+			removeTag(path, true);
 		else
-			removeTag(path.c_str());
+			removeTag(path);
 	}
 	else
 	{
 		name = command.popFront();
 		content = command.popFront();
 		path = command.popFront();
-		Tag tag(name.c_str(), content.c_str());
+
+		// Проверява дали тагът е самозатварящ се
+		Tag tag("", "");
+		if (name.find("/") != std::string::npos)
+		{
+			name.pop_back();
+			tag = Tag(name, content, true);
+		}
+		else
+			tag = Tag(name, content);
 
 		if (status == ADD)
-			addTag(tag, path.c_str());
+			addTag(tag, path);
 		else
-			changeTag(tag, path.c_str());
+			changeTag(tag, path);
 	}
 }
 
 void XMLManager::workAttributes(DLList<std::string>& commands, XMLManager::STATUS status)
 {
+	std::string oldName, name, value, path;
+	switch (status)
+	{
+	case ADD:
+	{
+		name = commands.popFront();
+		value = commands.popFront();
+		path = commands.popFront();
 
+		Attribute attr(name, value);
+		tags.addAttribute(attr, path);
+		break;
+	}
+	case CHANGE:
+	{
+		oldName = commands.popFront();
+		name = commands.popFront();
+		value = commands.popFront();
+		path = commands.popFront();
+
+		Attribute attr(name, value);
+		tags.changeAttribute(oldName, attr, path);
+		break;
+	}
+	case REMOVE:
+	{
+		name = commands.popFront();
+		path = commands.popFront();
+
+		tags.removeAttribute(name, path);
+		break;
+	}
+	}
+	if (!commands.isEmpty())
+		throw std::exception("Something went really wrong ..");
 }
 
-void XMLManager::changeTag(const Tag& tag, const char* path)
+void XMLManager::changeTag(const Tag& tag, std::string & path)
 {
 	try
 	{
@@ -58,7 +98,7 @@ void XMLManager::changeTag(const Tag& tag, const char* path)
 	}
 }
 
-void XMLManager::removeTag(const char* path, bool cascadeDeletion)
+void XMLManager::removeTag(std::string & path, bool cascadeDeletion)
 {
 	try
 	{
@@ -70,22 +110,22 @@ void XMLManager::removeTag(const char* path, bool cascadeDeletion)
 	}
 }
 
-void XMLManager::addAttribute(const Attribute& attribute, const char* path)
+void XMLManager::addAttribute(const Attribute& attribute, std::string & path)
 {
 	tags.addAttribute(attribute, path);
 }
 
-void XMLManager::changeAttribute(const char* oldAttribute, const Attribute& newAttribute, const char* path)
+void XMLManager::changeAttribute(std::string & oldAttribute, const Attribute& newAttribute, std::string & path)
 {
 	tags.changeAttribute(oldAttribute, newAttribute, path);
 }
 
-void XMLManager::removeAttribute(const Attribute& attribute, const char* path)
+void XMLManager::removeAttribute(const Attribute& attribute, std::string & path)
 {
 	tags.removeAttribute(attribute, path);
 }
 
-void XMLManager::print() const
+void XMLManager::print(std::ostream& output, bool pretty) const
 {
-	tags.send(*output);
+	tags.send(output, pretty);
 }

@@ -6,15 +6,15 @@
 class Attribute
 {
 public:
-	Attribute(const char* k) : key(k) {  }
-	Attribute(const char* k, const char* v) : key(k), value(v) {  }
+	Attribute(std::string& k) : key(k) {  }
+	Attribute(std::string& k, std::string& v) : key(k), value(v) {  }
 
 public:
 	std::string getKey() const { return key; }
 	std::string getValue() const { return value; }
 
-	void setKey(const char* other) { key = other; }
-	void setValue(const char* other) { key = other; }
+	void setKey(std::string& other) { key = other; }
+	void setValue(std::string& other) { key = other; }
 
 private:
 	std::string key;

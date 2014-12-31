@@ -8,16 +8,15 @@
 class TNode
 {
 public:
-	TNode(const Tag &);// , const TNode *);
+	TNode(const Tag &);
 
-	//TNode* parent;
 	DLList<TNode*> children;
 	Tag data;
 
 public:
 	bool operator==(const char* other) { return data == other; }
 	bool operator!=(const char* other) { return !(*this == other); }
-	void sendMe(const TNode *, std::ostream &, int);
+	void sendMe(const TNode *, std::ostream &, int, bool);
 
 private:
 	TNode(const TNode &);

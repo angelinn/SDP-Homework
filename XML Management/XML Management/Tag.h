@@ -8,8 +8,8 @@
 class Tag
 {
 public:
-	Tag(const char *, bool = false);
-	Tag(const char *, const char *, bool = false);
+	Tag(std::string, bool = false);
+	Tag(std::string, std::string, bool = false);
 
 public:
 	std::string getName() const;
@@ -27,7 +27,7 @@ public:
 	bool operator==(const char* str) const { return name == str; }
 	bool operator!=(const char* str) const { return !(*this == str); }
 
-	std::string getNameAndAttributes() const;
+	std::string getNameAndAttributes(bool) const;
 
 private:
 	std::string name;

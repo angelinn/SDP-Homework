@@ -22,11 +22,11 @@ void Tree::deleteTree(TNode*& node)
 	node = NULL;
 }
 
-void Tree::insertTag(const Tag& item, const char* path)
+void Tree::insertTag(const Tag& item, std::string& path)
 {
 	if (!root)
 	{
-		if (!strstr(path, "/"))
+		if (path.find("/") == std::string::npos)
 		{
 			root = new TNode(item);
 			return;
@@ -35,12 +35,12 @@ void Tree::insertTag(const Tag& item, const char* path)
 	}
 	DLList<TNode*> resultNodes;
 
-	getLastNode(path, root, resultNodes);
+	getLastNode(path.c_str(), root, resultNodes);
 	for (ListIterator iter = resultNodes.begin(); iter; ++iter)
 		(*iter)->children.pushBack(new TNode(item));
 }
 
-string_pair Tree::getParentPath(const char* path)
+string_pair Tree::getParentPath(std::string& path)
 {
 	std::string workPath(path);
 
@@ -56,25 +56,25 @@ string_pair Tree::getParentPath(const char* path)
 	return string_pair(parent, child);
 }
 
-void Tree::changeTag(const Tag& item, const char* path)
+void Tree::changeTag(const Tag& item, std::string& path)
 {
 	if (!root)
 		throw EmptyTreeOperation("No tags to change.");
 
 	DLList<TNode*> resultNodes;
-	getLastNode(path, root, resultNodes);
+	getLastNode(path.c_str(), root, resultNodes);
 
 	for (ListIterator iter = resultNodes.begin(); iter; ++iter)
 		(*iter)->data = item;
 
 }
 
-void Tree::removeTag(const char* path, bool cascadeDelete)
+void Tree::removeTag(std::string& path, bool cascadeDelete)
 {
 	if (!root)
 		throw EmptyTreeOperation("No tags to remove.");
 	
-	if (root->data == path)
+	if (root->data.getName() == path)
 	{
 		deleteTree(root);
 		return;
@@ -82,11 +82,11 @@ void Tree::removeTag(const char* path, bool cascadeDelete)
 
 	string_pair pair = getParentPath(path);
 
-	const char* parent = pair.first.c_str();
+	std::string& parent = pair.first;
 	std::string& child = pair.second;
 
 	DLList<TNode*> resultNodes;
-	getLastNode(parent, root, resultNodes);
+	getLastNode(parent.c_str(), root, resultNodes);
 
 	for (ListIterator piter = resultNodes.begin(); piter; ++piter)
 	{
@@ -106,17 +106,17 @@ void Tree::removeTag(const char* path, bool cascadeDelete)
 	}
 }
 
-void Tree::addAttribute(const Attribute& attribute, const char* path)
+void Tree::addAttribute(const Attribute& attribute, std::string& path)
 {
 	manipulateAttribute(attribute, path, &Tree::addAttributeInIterator);
 }
 
-void Tree::changeAttribute(const char* oldAttribute, const Attribute& newAttribute, const char* path)
+void Tree::changeAttribute(std::string& oldAttribute, const Attribute& newAttribute, std::string& path)
 {
-	manipulateAttribute(newAttribute, path, &Tree::changeAttributeInIterator, oldAttribute);
+	manipulateAttribute(newAttribute, path, &Tree::changeAttributeInIterator, oldAttribute.c_str());
 }
 
-void Tree::removeAttribute(const Attribute& attribute, const char* path)
+void Tree::removeAttribute(const Attribute& attribute, std::string& path)
 {
 	manipulateAttribute(attribute, path, &Tree::removeAttributeInIterator);
 }
@@ -165,13 +165,13 @@ void Tree::getLastNode(const char* path, TNode*& node, DLList<TNode*>& resultNod
 	delete[] workPath;
 }
 
-void Tree::manipulateAttribute(const Attribute& attribute, const char* path, attributeFunction workAttribute, const char* oldAttribute)
+void Tree::manipulateAttribute(const Attribute& attribute, std::string& path, attributeFunction workAttribute, const char* oldAttribute)
 {
 	if (!root)
 		throw EmptyTreeOperation("tree is empty");
 
 	DLList<TNode*> resultNodes;
-	getLastNode(path, root, resultNodes);
+	getLastNode(path.c_str(), root, resultNodes);
 
 	for (ListIterator iter = resultNodes.begin(); iter; ++iter)
 		(this->*workAttribute)(attribute, iter, oldAttribute);
@@ -187,7 +187,7 @@ void Tree::changeAttributeInIterator(const Attribute& newAttribute, const ListIt
 	if (!oldAttribute)
 		throw InvalidTreeOperation("Old attribute is not present.");
 
-	(*iter)->data.changeAttribute(oldAttribute, newAttribute);
+	(*iter)->data.changeAttribute(static_cast<std::string>(oldAttribute), newAttribute);
 }
 
 void Tree::removeAttributeInIterator(const Attribute& attribute, const ListIterator& iter, const char* oldAttribute)
@@ -195,11 +195,11 @@ void Tree::removeAttributeInIterator(const Attribute& attribute, const ListItera
 	(*iter)->data.removeAttribute(attribute);
 }
 
-void Tree::send(std::ostream& output) const
+void Tree::send(std::ostream& output, bool pretty) const
 {
 	if (root)
 	{
 		int tabulations = 0;
-		root->sendMe(root, output, tabulations);
+		root->sendMe(root, output, tabulations, pretty);
 	}
 }

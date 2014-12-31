@@ -7,9 +7,6 @@
 class XMLManager
 {
 public:
-	XMLManager(std::ostream &);
-
-public:
 	enum STATUS
 	{
 		ADD,
@@ -22,18 +19,17 @@ public:
 	void workAttributes(DLList<std::string> &, STATUS);
 
 public:
-	void addTag(const Tag &, const char *);
-	void changeTag(const Tag &, const char *);
-	void removeTag(const char *, bool = false);
+	void addTag(const Tag &, std::string &);
+	void changeTag(const Tag &, std::string &);
+	void removeTag(std::string &, bool = false);
 
 public:
-	void addAttribute(const Attribute &, const char *);
-	void changeAttribute(const char *, const Attribute &, const char *);
-	void removeAttribute(const Attribute &, const char *);
+	void addAttribute(const Attribute &, std::string &);
+	void changeAttribute(std::string &, const Attribute &, std::string &);
+	void removeAttribute(const Attribute &, std::string &);
 
-	void print() const;
+	void print(std::ostream &, bool) const;
 private:
-	std::ostream* output;
 	Tree tags;
 };
 

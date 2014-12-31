@@ -1,5 +1,6 @@
 #include "CLI.h"
 #include <iostream>
+#include <fstream>
 #include <string>
 
 const char* CLI::HELP_MESSAGE = "addtag {name} {content} {path} - adds a tag to the current path\n"
@@ -8,12 +9,9 @@ const char* CLI::HELP_MESSAGE = "addtag {name} {content} {path} - adds a tag to 
 								"\naddattribute {name} {value} {path} - adds an attribute to the desired tag"
 								"removeattribute {name} {path} - removes an attribute from the desired tag\n"
 								"changeattribute {old_name} {new_name} {new_value} {path} - changes an attribute\n"
-								"send > {file} - sends the xml document to a file\n"
-								"send > console - sends the xml document to the current interface\n";
+								"send > {file} {true/false - pretty print} - sends the xml document to a file\n"
+								"send {true/false - pretty print} - sends the xml document to the current interface\n";
 
-
-CLI::CLI(): manager(std::cout)
-{  }
 
 void CLI::go()
 {
@@ -52,8 +50,33 @@ void CLI::parseCommand(DLList<std::string>& command)
 		else
 			throw std::exception("Invalid command");
 	}
-	else if (cmd.find("send"))
-		manager.print();
+	else if (cmd.find("attribute") != std::string::npos)
+	{
+		std::string firstPart(cmd, 0, cmd.find("attribute"));
+		if (!firstPart.compare("add"))
+			manager.workAttributes(command, XMLManager::ADD);
+		else if (!firstPart.compare("change"))
+			manager.workAttributes(command, XMLManager::CHANGE);
+		else if (!firstPart.compare("remove"))
+			manager.workAttributes(command, XMLManager::REMOVE);
+		else
+			throw std::exception("Invalid command");
+	}
+	else if (cmd.find("send") != std::string::npos)
+	{
+		std::string pretty(command.popBack());
+		bool prettyPrint = false;
+		if (!pretty.compare("true"))
+			prettyPrint = true;
+
+		if (command.isEmpty())
+			manager.print(std::cout, prettyPrint);
+		else
+		{
+			std::string path(command.popBack());
+			saveToFile(path, prettyPrint);
+		}
+	}
 	else if (!cmd.compare("help"))
 		help();
 }
@@ -81,7 +104,14 @@ void CLI::split(std::string& string, char delim, DLList<std::string>& result)
 	result.pushBack(placeholder);
 }
 
-void CLI::help()
+void CLI::saveToFile(std::string& path, bool pretty) const
+{
+	std::ofstream output(path, std::ios::out);
+	manager.print(output, pretty);
+	output.close();
+}
+
+void CLI::help() const
 {
 	std::cout << HELP_MESSAGE << std::endl;
 }

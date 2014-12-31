@@ -77,6 +77,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Attribute.h" />
+    <ClInclude Include="CLI.h" />
     <ClInclude Include="DLList.h" />
     <ClInclude Include="DNode.h" />
     <ClInclude Include="TreeException.h" />
@@ -86,6 +87,7 @@
     <ClInclude Include="XMLManager.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CLI.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Tag.cpp" />
     <ClCompile Include="TNode.cpp" />

@@ -39,6 +39,9 @@
     <ClInclude Include="TreeException.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="CLI.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -54,6 +57,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Tree.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CLI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

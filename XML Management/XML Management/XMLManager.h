@@ -10,6 +10,18 @@ public:
 	XMLManager(std::ostream &);
 
 public:
+	enum STATUS
+	{
+		ADD,
+		CHANGE,
+		REMOVE
+	};
+
+
+	void workTag(DLList<std::string> &, STATUS);
+	void workAttributes(DLList<std::string> &, STATUS);
+
+public:
 	void addTag(const Tag &, const char *);
 	void changeTag(const Tag &, const char *);
 	void removeTag(const char *, bool = false);

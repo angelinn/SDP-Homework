@@ -15,6 +15,37 @@ void XMLManager::addTag(const Tag& tag, const char* path)
 	}
 }
 
+void XMLManager::workTag(DLList<std::string>& command, XMLManager::STATUS status)
+{
+	std::string oldName, name, content, path;
+
+	if (status == REMOVE)
+	{
+		path = command.popFront();
+		if (command.popFront().compare("true"))
+			removeTag(path.c_str(), true);
+		else
+			removeTag(path.c_str());
+	}
+	else
+	{
+		name = command.popFront();
+		content = command.popFront();
+		path = command.popFront();
+		Tag tag(name.c_str(), content.c_str());
+
+		if (status == ADD)
+			addTag(tag, path.c_str());
+		else
+			changeTag(tag, path.c_str());
+	}
+}
+
+void XMLManager::workAttributes(DLList<std::string>& commands, XMLManager::STATUS status)
+{
+
+}
+
 void XMLManager::changeTag(const Tag& tag, const char* path)
 {
 	try

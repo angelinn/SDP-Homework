@@ -15,7 +15,7 @@ void TNode::sendMe(const TNode* node, std::ostream& output, int tabulations)
 	{
 		for (DLList<TNode*>::Iterator iter = node->children.begin(); iter; ++iter)
 			sendMe((*iter), output, tabulations + 1);
-	}
 
-	output << empty_spaces << "</" << node->data.getName() << ">\n";
+		output << empty_spaces << "</" << node->data.getName() << ">\n";
+	}
 }

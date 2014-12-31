@@ -76,16 +76,21 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Attribute.h" />
     <ClInclude Include="DLList.h" />
     <ClInclude Include="DNode.h" />
-    <ClInclude Include="InvalidTreeOperation.h" />
+    <ClInclude Include="TreeException.h" />
+    <ClInclude Include="Tag.h" />
     <ClInclude Include="TNode.h" />
     <ClInclude Include="Tree.h" />
-    <ClInclude Include="XMLCreator.h" />
+    <ClInclude Include="XMLManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="XMLCreator.cpp" />
+    <ClCompile Include="Tag.cpp" />
+    <ClCompile Include="TNode.cpp" />
+    <ClCompile Include="Tree.cpp" />
+    <ClCompile Include="XMLManager.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

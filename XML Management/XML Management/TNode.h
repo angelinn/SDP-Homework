@@ -2,23 +2,26 @@
 #define TNODE_H
 
 #include "DLList.h"
+#include "Tag.h"
+#include <ostream>
 
-template <typename T>
 class TNode
 {
 public:
-	TNode(const T &);
+	TNode(const Tag &);// , const TNode *);
 
-	DLList<TNode<T>*> children;
-	T data;
+	//TNode* parent;
+	DLList<TNode*> children;
+	Tag data;
+
+public:
+	bool operator==(const char* other) { return data == other; }
+	bool operator!=(const char* other) { return !(*this == other); }
+	void sendMe(const TNode *, std::ostream &, int);
 
 private:
-	TNode(const TNode<T> &);
-	TNode<T>& operator=(const TNode<T> &);
+	TNode(const TNode &);
+	TNode& operator=(const TNode &);
 };
-
-template <typename T>
-TNode<T>::TNode(const T& item) : data(item)
-{ }
 
 #endif // TNODE_H

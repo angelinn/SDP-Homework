@@ -15,6 +15,9 @@ public:
 		Iterator& operator++();
 		const Iterator& operator++() const;
 
+		Iterator& operator--();
+		const Iterator& operator--() const;
+
 		bool operator==(const Iterator &) const;
 		bool operator!=(const Iterator &) const;
 		operator bool() const { return current != NULL; }
@@ -32,6 +35,8 @@ public:
 
 public:
 	DLList();
+	DLList(const DLList &);
+	DLList& operator=(const DLList &);
 	~DLList();
 
 public:
@@ -48,12 +53,11 @@ public:
 	T popBack();
 	T popAt(const Iterator &);
 
-	Iterator begin();
-	Iterator end();
+	Iterator begin() const;
+	Iterator end() const;
 
 private:
-	DLList(const DLList &);
-	DLList& operator=(const DLList &);
+	void copyFrom(const DLList<T> &);
 
 private:
 	int count;
@@ -80,6 +84,21 @@ template <typename T>
 typename DLList<T>::Iterator& DLList<T>::Iterator::operator++()
 {
 	return const_cast<DLList<T>::Iterator&> (static_cast<const DLList<T>::Iterator &> (*this).operator++());
+}
+
+template <typename T>
+const typename DLList<T>::Iterator& DLList<T>::Iterator::operator--() const
+{
+	if (current)
+		current = current->prev;
+
+	return *this;
+}
+
+template <typename T>
+typename DLList<T>::Iterator& DLList<T>::Iterator::operator--()
+{
+	return const_cast<DLList<T>::Iterator&> (static_cast<const DLList<T>::Iterator &> (*this).operator--());
 }
 
 template <typename T>
@@ -113,13 +132,13 @@ T DLList<T>::Iterator::operator*() const
 }
 
 template <typename T>
-typename DLList<T>::Iterator DLList<T>::begin()
+typename DLList<T>::Iterator DLList<T>::begin() const
 {
 	return Iterator(first);
 }
 
 template <typename T>
-typename DLList<T>::Iterator DLList<T>::end()
+typename DLList<T>::Iterator DLList<T>::end() const
 {
 	return Iterator(last);
 }
@@ -127,6 +146,31 @@ typename DLList<T>::Iterator DLList<T>::end()
 template <typename T>
 DLList<T>::DLList() : first(NULL), last(NULL), count(0)
 { }
+
+template <typename T>
+DLList<T>::DLList(const DLList<T>& other) : first(NULL), last(NULL), count(0)
+{
+	copyFrom(other);
+}
+
+template <typename T>
+DLList<T>& DLList<T>::operator=(const DLList<T>& other)
+{
+	if (this != &other)
+	{
+		clear();
+		copyFrom(other);
+	}
+
+	return *this;
+}
+
+template <typename T>
+void DLList<T>::copyFrom(const DLList<T>& other)
+{
+	for (Iterator iter = other.begin(); iter; ++iter)
+		pushBack(*iter);
+}
 
 template <typename T>
 DLList<T>::~DLList()

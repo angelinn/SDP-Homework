@@ -6,6 +6,7 @@
 class CLI
 {
 public:
+	CLI();
 	void go();
 
 private:
@@ -16,6 +17,8 @@ private:
 	void split(std::string &, char, DLList<std::string> &);
 	void parseCommand(DLList<std::string> &);
 	void saveToFile(std::string &, bool) const;
+
+	bool keepGoing;
 	XMLManager manager;
 };
 

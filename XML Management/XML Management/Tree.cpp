@@ -4,6 +4,56 @@ typedef std::pair<std::string, std::string> string_pair;
 typedef DLList<TNode*>::Iterator ListIterator;
 typedef void(Tree::*attributeFunction)(const Attribute &, const ListIterator &, const char *);
 
+Tree::Iterator::Iterator(TNode* curr)
+{
+	nodes.enqueue(curr);
+}
+
+const Tree::Iterator& Tree::Iterator::operator++() const
+{
+	TNode* current = nodes.dequeue();
+	for (ListIterator iter = current->children.begin(); iter; ++iter)
+		nodes.enqueue((*iter));
+
+	return *this;
+}
+
+Tree::Iterator& Tree::Iterator::operator++()
+{
+	return const_cast<Tree::Iterator&> (static_cast<const Tree::Iterator &> (*this).operator++());
+}
+
+bool Tree::Iterator::operator==(const Iterator& other) const
+{
+	return nodes.peek() == other.nodes.peek();
+}
+
+bool Tree::Iterator::operator!=(const Iterator& other) const
+{
+	return !((*this) == other);
+}
+
+Tag& Tree::Iterator::operator*()
+{
+	if (nodes.peek())
+		return nodes.peek()->data;
+
+	throw TreeException("No element selected!");
+}
+
+Tag Tree::Iterator::operator*() const
+{
+	if (nodes.peek())
+		return nodes.peek()->data;
+
+	throw TreeException("No element selected!");
+}
+
+Tree::Iterator Tree::begin() const
+{
+	return Iterator(root);
+}
+
 Tree::Tree() : root(NULL)
 {  }
 

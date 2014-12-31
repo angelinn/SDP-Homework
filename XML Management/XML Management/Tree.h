@@ -5,9 +5,31 @@
 #include "TreeException.h"
 #include <iostream>
 #include <string>
+#include "Queue.h"
 
 class Tree
 {
+public:
+	class Iterator
+	{
+	public:
+
+		Iterator& operator++();
+		const Iterator& operator++() const;
+
+		bool operator==(const Iterator &) const;
+		bool operator!=(const Iterator &) const;
+		operator bool() const { return !nodes.isEmpty(); }
+		Tag operator*() const;
+		Tag& operator*();
+
+	private:
+		Iterator(TNode *);
+		mutable Queue<TNode*> nodes;
+
+		friend class Tree;
+	};
+
 public:
 	Tree();
 	~Tree();
@@ -26,6 +48,8 @@ public:
 	void addAttribute(const Attribute &, std::string &);
 	void changeAttribute(std::string &, const Attribute &, std::string &);
 	void removeAttribute(const Attribute &, std::string &);
+
+	Iterator begin() const;
 
 private:
 	Tree(const Tree &);

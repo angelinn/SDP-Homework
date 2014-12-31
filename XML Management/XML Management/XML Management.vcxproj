@@ -80,6 +80,8 @@
     <ClInclude Include="CLI.h" />
     <ClInclude Include="DLList.h" />
     <ClInclude Include="DNode.h" />
+    <ClInclude Include="Node.h" />
+    <ClInclude Include="Queue.h" />
     <ClInclude Include="TreeException.h" />
     <ClInclude Include="Tag.h" />
     <ClInclude Include="TNode.h" />

@@ -12,6 +12,8 @@ const char* CLI::HELP_MESSAGE = "addtag {name} {content} {path} - adds a tag to 
 								"\nsend > {file} {true/false - pretty print} - sends the xml document to a file\n"
 								"send {true/false - pretty print} - sends the xml document to the current interface\n";
 
+CLI::CLI() : keepGoing(true)
+{  }
 
 void CLI::go()
 {
@@ -19,7 +21,7 @@ void CLI::go()
 	std::string buffer;
 	DLList<std::string> result;
 
-	while (true)
+	while (keepGoing)
 	{
 		std::getline(std::cin, buffer);
 		split(buffer, ' ', result);
@@ -87,6 +89,8 @@ void CLI::parseCommand(DLList<std::string>& command)
 	}
 	else if (!cmd.compare("help"))
 		help();
+	else if (!cmd.compare("exit"))
+		keepGoing = false;
 }
 
 void CLI::split(std::string& string, char delim, DLList<std::string>& result)

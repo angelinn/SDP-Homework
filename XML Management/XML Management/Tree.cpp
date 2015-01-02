@@ -127,6 +127,9 @@ void Tree::removeTag(std::string& path, bool cascadeDelete)
 	
 	if (root->data.getName() == path)
 	{
+		if (!root->children.isEmpty() && !cascadeDelete)
+			throw CascadeDeleteWarning("There are more tags inside. Please delete them first.");
+
 		deleteTree(root);
 		return;
 	}

@@ -10,7 +10,8 @@ const char* CLI::HELP_MESSAGE = "addtag {name} {content} {path} - adds a tag to 
 								"removeattribute {name} {path} - removes an attribute from the desired tag\n"
 								"changeattribute {old_name} {new_name} {new_value} {path} - changes an attribute\n"
 								"\nsend > {file} {true/false - pretty print} - sends the xml document to a file\n"
-								"send {true/false - pretty print} - sends the xml document to the current interface\n";
+								"send {true/false - pretty print} - sends the xml document to the current interface\n"
+								"\nif you want to say the content or path are empty, please use \"\"\n\n";
 
 CLI::CLI() : keepGoing(true)
 {  }
@@ -109,6 +110,13 @@ void CLI::split(std::string& string, char delim, DLList<std::string>& result)
 			placeholder.clear();
 			j = 0;
 			continue;
+		}
+		if (string[i] == '"' && string[i + 1] != '"' && string[i - 1] != '"' && string[i + 1] != '\0')
+		{
+			++i;
+			while (string[i] != '"' && string[i] != '\0')
+				placeholder.push_back(string[i++]);
+			string[i] = ' ';
 		}
 		placeholder.push_back(string[i]);
 

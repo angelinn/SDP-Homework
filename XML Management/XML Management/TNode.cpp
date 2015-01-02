@@ -16,7 +16,7 @@ void TNode::sendMe(const TNode* node, std::ostream& output, int tabulations, boo
 
 	output << empty_spaces << node->data.getNameAndAttributes(pretty);
 	if (node->data.getContent() != "")
-		output << empty_spaces << node->data.getContent() << new_line;
+		output << std::string(!empty_spaces.size() ? 0 : empty_spaces.size() + 4, ' ')  << node->data.getContent() << new_line;
 
 	if (!node->data.isSelfClosing())
 	{

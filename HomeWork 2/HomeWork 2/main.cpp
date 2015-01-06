@@ -1,6 +1,7 @@
 #include <iostream>
 #include "Market.h"
 #include <list>
+#include <crtdbg.h>
 
 using namespace std;
 
@@ -200,4 +201,6 @@ int main()
 	{
 		std::cerr << e.what() << std::endl;
 	}
+
+	_CrtDumpMemoryLeaks();
 }

@@ -1,25 +1,25 @@
 #ifndef SIMULATION_H
 #define SIMULATION_H
 
-#include "Crossroad.h"
-#include <istream>
+#include "City.h"
+#include <iostream>
 
 class Simulation
 {
 public:
 	Simulation(int, int, int, std::istream &);
+	void start();
 
 private:
 	Simulation(const Simulation &);
 	Simulation& operator=(const Simulation &);
 
 private:
-	int height;
-	int width;
-	void free();
+
 
 private:
-	Crossroad** map;
+	std::istream* input;
+	City city;
 };
 
 

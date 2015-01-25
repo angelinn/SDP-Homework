@@ -6,30 +6,39 @@
 
 class Simulation
 {
-	typedef std::pair<double, int> simPair;
+	typedef std::pair<int, int> simPair;
+	static const int NEAR_RIVER_MULTIPLY = 2; // If the crossroad is near a river, it carries 2*C water
 
 public:
-	Simulation(std::istream &);
+	Simulation(std::istream &, std::ostream &);
 	~Simulation();
+
+public:
+	void start();
+	void printMatrix() const;
 
 private:
 	Simulation(const Simulation &);
 	Simulation& operator=(const Simulation &);
 
-public:
-	void start();
-
 private:
-	void load(size_t, size_t, int);
+	void loadStreets(size_t, size_t, int);
+	void fillGraph();
 	simPair* getSimulationDetails();
-	void fillGraph(size_t, size_t);
-	void bombNodeIf(GNode *&, GNode *&);
-	void printMatrix(size_t, size_t) const;
-	void water(int);
 
 private:
-	int simulationsCount;
+	void addNodeIf(GNode *&, GNode *&);
+	void water(int);
+	void leak(GNode *, double);
+	bool checkForEnd();
+
+private:
 	std::istream& input;
+	std::ostream& output;
+
+	int simulationsCount;
+	size_t height;
+	size_t width;
 	std::vector<GNode*> graph;
 };
 

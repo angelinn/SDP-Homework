@@ -1,10 +1,10 @@
 #include "Simulation.h"
 #include <iostream>
 
-typedef std::pair<double, int> simPair;
+typedef std::pair<int, int> simPair;
 int Crossroad::carryingCapacity = 0;
 
-Simulation::Simulation(std::istream& stream) : input(stream), simulationsCount(0)
+Simulation::Simulation(std::istream& in, std::ostream& out) : input(in), output(out), simulationsCount(0), height(0), width(0)
 {  }
 
 Simulation::~Simulation()
@@ -15,36 +15,44 @@ Simulation::~Simulation()
 		delete graph[i];
 }
 
-void Simulation::load(size_t m, size_t n, int c)
+///
+///  Puts the matrix numbers in a vector of nodes 
+///  and sets the setting if they are near a river
+///
+void Simulation::loadStreets(size_t m, size_t n, int c)
 {
+	height = m;
+	width = n;
+
 	int courier = 0;
-	size_t size = m * n;
 	int nearRiver = 0;
 
-	for (size_t i = 0; i < m; ++i)
+	for (size_t i = 0; i < height; ++i)
 	{
-		for (size_t j = 0; j < n; ++j)
+		for (size_t j = 0; j < width; ++j)
 		{
-			if (i == 0 || i == m - 1)
-				nearRiver += 2;
-			if (j == 0 || j == n - 1)
-				nearRiver += 2;
+			if (i == 0 || i == height - 1)
+				++nearRiver;
+			if (j == 0 || j == width - 1)
+				++nearRiver;
 
 
-			std::cin >> courier;
+			input >> courier;
 			graph.push_back(new GNode(courier, nearRiver));
 			nearRiver = 0;
 		}
 	}
 
-	fillGraph(m, n);
+	fillGraph();
 
 	Crossroad::carryingCapacity = c;
 }
 
-void Simulation::fillGraph(size_t height, size_t width)
+///
+/// From the ready vector this method connects the graph (makes it directed)
+///
+void Simulation::fillGraph()
 {
-	int vectorCounter = 0;
 	GNode* current = NULL;
 
 	for (size_t i = 0; i < height; ++i)
@@ -54,44 +62,41 @@ void Simulation::fillGraph(size_t height, size_t width)
 			current = graph[width * i + j];
 
 			if (i == 0)
-				bombNodeIf(current, graph[width * (i + 1) + j]);
+				addNodeIf(current, graph[width * (i + 1) + j]);
 			else if (i == height - 1)
-				bombNodeIf(current, graph[width * (i - 1) + j]);
+				addNodeIf(current, graph[width * (i - 1) + j]);
 			else
 			{
-				bombNodeIf(current, graph[width * (i + 1) + j]);
-				bombNodeIf(current, graph[width * (i - 1) + j]);
+				addNodeIf(current, graph[width * (i + 1) + j]);
+				addNodeIf(current, graph[width * (i - 1) + j]);
 			}
 
 			if (j == 0)
-				bombNodeIf(current, graph[width * i + j + 1]);
+				addNodeIf(current, graph[width * i + j + 1]);
 			else if (j == width - 1)
-				bombNodeIf(current, graph[width * i + j - 1]);
+				addNodeIf(current, graph[width * i + j - 1]);
 			else
 			{
-				bombNodeIf(current, graph[width * i + j + 1]);
-				bombNodeIf(current, graph[width * i + j - 1]);
+				addNodeIf(current, graph[width * i + j + 1]);
+				addNodeIf(current, graph[width * i + j - 1]);
 			}
 		}
 	}
-
-	for (size_t i = 0; i < height * width; ++i)
-	{
-		std::cout << graph[i]->value.altitude << " - ";
-		for (size_t j = 0; j < graph[i]->neighbours.size(); ++j)
-		{
-			std::cout << graph[i]->neighbours[j]->value.altitude << " ";
-		}
-		std::cout << std::endl;
-	}
 }
 
-void Simulation::bombNodeIf(GNode*& current, GNode*& versus)
+///
+/// If the versus node is lower than the current, adds it to current neighbours
+///
+void Simulation::addNodeIf(GNode*& current, GNode*& versus)
 {
 	if (current->value.altitude > versus->value.altitude)
 		current->neighbours.push_back(versus);
 }
 
+///
+/// Gets from the given input stream the water that will fall and the turns count
+/// May throw a std::bad_alloc exception
+///
 simPair* Simulation::getSimulationDetails()
 {
 	input >> simulationsCount;
@@ -113,53 +118,92 @@ simPair* Simulation::getSimulationDetails()
 	return simulationDetails;
 }
 
+///
+/// The main method
+///
 void Simulation::start()
 {
 	int m = 0, n = 0, c = 0;
 
 	input >> m >> n >> c;
-	load(m, n, c);
+	loadStreets(m, n, c);
 	simPair* simulationDetails = getSimulationDetails();
 
 
 	int turns = 0;
-	int waterToFall = 0;
+	double waterToFall = 0;
 	size_t graphSize = graph.size();
-	size_t neighbourSize = 0;
 
 	for (int simulationNum = 0; simulationNum < simulationsCount; ++simulationNum)
 	{
-		water(static_cast<int>(simulationDetails[simulationNum].first));
+		water(simulationDetails[simulationNum].first);
 		turns = simulationDetails[simulationNum].second;
 
 		for (int turn = 0; turn < turns; ++turn)
 		{
 			for (size_t i = 0; i < graphSize; ++i)
 			{
-				if (graph[i]->value.nearRiver)
-					graph[i]->value.currentWater -= Crossroad::carryingCapacity * graph[i]->value.nearRiver;
+				waterToFall = graph[i]->value.currentWater /
+					(graph[i]->value.nearRiver + graph[i]->neighbours.size());
 
-				neighbourSize = graph[i]->neighbours.size();
-
-				for (size_t j = 0; j < neighbourSize; ++j)
-				{
-					graph[i]->neighbours[j]->value.currentWater += Crossroad::carryingCapacity;
-					graph[i]->value.currentWater -= Crossroad::carryingCapacity;
-				}
-
-				//std::cout << "K: " << i << std::endl;
-				//printMatrix(m, n);
-				//std::cout << std::endl;
+				if (waterToFall > Crossroad::carryingCapacity)
+					leak(graph[i], Crossroad::carryingCapacity);
+				else
+					leak(graph[i], waterToFall);
 			}
+
+			if (checkForEnd())
+				break;
 		}
-
-		printMatrix(m, n);
+		printMatrix();
 	}
-
 
 	delete[] simulationDetails;
 }
 
+///
+/// Checks if simulation needs to be stopped
+///
+bool Simulation::checkForEnd()
+{
+	size_t graphSize = graph.size();
+	for (size_t i = 0; i < graphSize; ++i)
+		if (graph[i]->value.currentWater && graph[i]->neighbours.size())
+			return false;
+
+	return true;
+}
+
+///
+/// Method that adds and substracts water amount as needed
+///
+void Simulation::leak(GNode* node, double waterToLeak)
+{
+	size_t neighbourSize = node->neighbours.size();
+
+	for (size_t i = 0; i < neighbourSize; ++i)
+	{
+		if (node->value.currentWater)
+		{
+			node->neighbours[i]->value.currentWater += waterToLeak;
+			node->value.currentWater -= waterToLeak;
+
+			if (node->value.currentWater < 0)
+				node->value.currentWater = 0;
+		}
+	}
+
+	// TO DO: Fix repetative Code
+	node->value.currentWater -= node->value.nearRiver * 
+		Crossroad::carryingCapacity * NEAR_RIVER_MULTIPLY;
+
+	if (node->value.currentWater < 0)
+		node->value.currentWater = 0;
+}
+
+///
+/// Floods the city of Chirbod with water
+///
 void Simulation::water(int waterToFall)
 {
 	size_t size = graph.size();
@@ -167,12 +211,17 @@ void Simulation::water(int waterToFall)
 		graph[i]->value.currentWater = waterToFall;
 }
 
-void Simulation::printMatrix(size_t h, size_t w) const
+///
+/// Prints the matrix in the given output stream in the constructor
+///
+void Simulation::printMatrix() const
 {
-	for (size_t i = 0; i < h; ++i)
+	for (size_t i = 0; i < height; ++i)
 	{
-		for (size_t j = 0; j < w; ++j)
-			std::cout << graph[w * i + j]->value.currentWater << " ";
-		std::cout << std::endl;
+		for (size_t j = 0; j < width; ++j)
+			output << graph[width * i + j]->value.currentWater << " ";
+
+		output << std::endl;
 	}
+	output << std::endl;
 }

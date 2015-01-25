@@ -4,6 +4,7 @@
 struct Crossroad
 {
 	int altitude;
+	int nearRiver;
 	double currentWater;
 	static int carryingCapacity;
 };

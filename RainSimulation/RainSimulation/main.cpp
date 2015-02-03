@@ -20,7 +20,7 @@ int main()
 			sim.start();
 			end = clock();
 
-			std::cout << (double)(end - start) / CLOCKS_PER_SEC << std::endl;
+			std::cout << "It took " << (double)(end - start) / CLOCKS_PER_SEC << "ms." << std::endl;
 		}
 		catch (std::exception e)
 		{

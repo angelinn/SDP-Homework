@@ -118,6 +118,8 @@ simPair* Simulation::getSimulationDetails()
 	return simulationDetails;
 }
 
+static int p = 0;
+
 ///
 /// The main method
 ///
@@ -128,7 +130,6 @@ void Simulation::start()
 	input >> m >> n >> c;
 	loadStreets(m, n, c);
 	simPair* simulationDetails = getSimulationDetails();
-
 
 	int turns = 0;
 	double waterToFall = 0;
@@ -152,12 +153,14 @@ void Simulation::start()
 					leak(graph[i], waterToFall);
 			}
 
+			for (size_t i = 0; i < graphSize; ++i)
+				graph[i]->value.currentWater = graph[i]->value.afterPouring;
+
 			if (checkForEnd())
 				break;
 		}
 		printMatrix();
 	}
-
 	delete[] simulationDetails;
 }
 
@@ -174,6 +177,7 @@ bool Simulation::checkForEnd()
 	return true;
 }
 
+
 ///
 /// Method that adds and substracts water amount as needed
 ///
@@ -183,22 +187,17 @@ void Simulation::leak(GNode* node, double waterToLeak)
 
 	for (size_t i = 0; i < neighbourSize; ++i)
 	{
-		if (node->value.currentWater)
-		{
-			node->neighbours[i]->value.currentWater += waterToLeak;
-			node->value.currentWater -= waterToLeak;
-
-			if (node->value.currentWater < 0)
-				node->value.currentWater = 0;
-		}
+		node->neighbours[i]->value.afterPouring += waterToLeak;
+		node->value.afterPouring -= waterToLeak;
 	}
 
-	// TO DO: Fix repetative Code
-	node->value.currentWater -= node->value.nearRiver * 
-		Crossroad::carryingCapacity * NEAR_RIVER_MULTIPLY;
+	node->value.afterPouring -= node->value.nearRiver *
+		waterToLeak * NEAR_RIVER_MULTIPLY;
 
-	if (node->value.currentWater < 0)
-		node->value.currentWater = 0;
+	if (node->value.afterPouring < 0)
+		node->value.afterPouring = 0;
+
+	node->value.currentWater = node->value.afterPouring;
 }
 
 ///
@@ -208,7 +207,7 @@ void Simulation::water(int waterToFall)
 {
 	size_t size = graph.size();
 	for (size_t i = 0; i < size; ++i)
-		graph[i]->value.currentWater = waterToFall;
+		graph[i]->value.currentWater = graph[i]->value.afterPouring = waterToFall;
 }
 
 ///
